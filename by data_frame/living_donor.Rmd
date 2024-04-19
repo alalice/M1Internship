@@ -1,0 +1,24 @@
+---
+title: "Exploration DIVAT living_donor"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor",na = "NA")
+
+```
+
+
+```{r}
+describe(living_donor)
+```
+
+
+```{r}
+summary(living_donor)
+```
+

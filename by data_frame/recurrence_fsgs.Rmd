@@ -1,0 +1,20 @@
+---
+title: "Exploration DIVAT reccurence_fsgs"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+#coltype <- c("guess","text","guess","guess","guess","text")
+reccurence_fsgs <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "recurrence_fsgs",na = "NA",col_types = "text")
+```
+
+```{r}
+describe(reccurence_fsgs)
+```
+```{r}
+summary(reccurence_fsgs)
+```
+
+

@@ -1,0 +1,72 @@
+---
+title: "Exploration DIVAT consult"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+suppressWarnings(library(corrplot))
+suppressWarnings(library(gplots))
+coltype <- c("text",rep("text",32))
+consult <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "consult",na = "NA",col_types = coltype)
+```
+
+```{r}
+consult_N_test <- as.numeric(consult$id_g)
+consult_N <- consult[consult$id_g == consult_N_test,]
+consult_N <- consult_N[complete.cases(consult_N$id_g),]
+```
+```{r}
+for (col in names(consult_N)) {
+  if(sum(is.na(consult_N[[col]]))!= 0){
+    cat(col ,":" , sum(is.na(consult_N[[col]])),"\n")}
+}
+```
+
+
+Missing (NA) : - day_consult : 703/32350
+               - weight_consult : 2556 -> may be already enter in the base (check id_g equals)
+               - height_consult : 179 ""
+               - bmi_consult : 2696"" -> can be compute if h & w known
+               - creat_consult : 257 -> random ?
+               - mdrd_consult : 257   -> random ?
+               - ckdepi_consult : 257 -> random ?
+               - prot_consult : 6629 -> not calculated ? replace by random?
+               - hemoglobin_consult : 3855 ""
+               - ttt_hta_consult : 3417 ""
+               - cni_consult : 221 -> replace by "Non"?
+               - cni_dose_consult : 3965 -> "Non" + random? replace by -2?
+               - cni_tx_consult : 20163 -> only prescribe ? replace by -2?
+               - antiprolif_consult : 469 -> random ?
+               - mmf_consult : 262 -> random ?
+               - mmf_dose_consult : (mmf_consult == 0)+ random, replace by "Non"?
+               - mpa_consult : 1271 -> random?
+               - mpa_dose_consult : 24527 -> ==0 + random -> -2
+               - aza_consult : 180 -> random ?
+               - aza_dose_consult : 30591 -> ==0 + random -> -2
+               - mTor_consult : 1220 -> random ?
+               - rapa_consult : 182 -> random ?
+               - rapa_dose_consult : 31061 -> ==0 + random -> -2
+               - rapa_tx_consult : 31976 -> only highest ? replace by -2?
+               - evero_consult : 1224 -> random ?
+               - evero_dose_consult : 30445 -> ==0 + random -> -2
+               - evero_tx_consult : 31042 -> only part of it ?
+               - cs_consult : 334 -> random ?
+               - cs_dose_consult : 22236 -> ==0 + random -> -2
+               
+               
+               
+
+
+```{r}
+describe(consult_N)
+```
+
+
+```{r}
+summary(consult)
+```
+
