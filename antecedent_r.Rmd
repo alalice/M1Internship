@@ -1,0 +1,55 @@
+---
+title: "Exploration DIVAT antecedent_r"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+suppressWarnings(library(corrplot))
+suppressWarnings(library(gplots))
+suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "antecedent_r",na = "NA",col_types = "numeric"))
+```
+```{r}
+antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
+```
+
+
+```{r}
+describe(antecedent_r_Nantes)
+```
+
+missing "NA" : - atcdt_diab_g : 57 (random)
+               - atcdt_vasc_g : 1 (random -> replace randomly ? -> 0)
+               - atcdt_smok_g: all (non random -> remove the column?)
+               - atcdt_pregnancy_g : 2320 (non random -> replace by 0) 
+
+```{r}
+antecedent_r_Nantes$atcdt_vasc_g[is.na(antecedent_r_Nantes$atcdt_vasc_g)] <- 0
+antecedent_r_Nantes <- antecedent_r_Nantes[,-14]
+```
+```{r}
+antecedent_r_Nantes$atcdt_pregnancy_g[is.na(antecedent_r_Nantes$atcdt_pregnancy_g)] <- 0
+```
+
+
+```{r}
+summary(antecedent_r_Nantes)
+```
+
+
+```{r}
+correlation_matrix <- cor(antecedent_r_Nantes[,2:14])
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10))
+```
+
+
