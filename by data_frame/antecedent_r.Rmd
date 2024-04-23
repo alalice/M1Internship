@@ -13,6 +13,7 @@ suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
 suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "antecedent_r",na = "NA",col_types = "numeric"))
 ```
+
 ```{r}
 antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
 ```
@@ -22,10 +23,29 @@ antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
 describe(antecedent_r_Nantes)
 ```
 
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(antecedent_r_Nantes$id_g)
+for (col in names(antecedent_r_Nantes)) {
+  if(sum(is.na(antecedent_r_Nantes[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(antecedent_r_Nantes[[col]])),"\n")
+    dataframe[col] <- c(sum(is.na(antecedent_r_Nantes[[col]])),sum(is.na(antecedent_r_Nantes[[col]]))/lenght,"random")}
+}
+```
+
 missing "NA" : - atcdt_diab_g : 57 (random)
                - atcdt_vasc_g : 1 (random -> replace randomly ? -> 0)
                - atcdt_smok_g: all (non random -> remove the column?)
                - atcdt_pregnancy_g : 2320 (non random -> replace by 0) 
+```{r}
+dataframe$atcdt_smok_g[3]<- "missing all (remove column)"
+dataframe$atcdt_pregnancy_g[3]<- "replace by 0"
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "antecedent_r", append = FALSE)
+```
+
 
 ```{r}
 antecedent_r_Nantes$atcdt_vasc_g[is.na(antecedent_r_Nantes$atcdt_vasc_g)] <- 0

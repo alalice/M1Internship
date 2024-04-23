@@ -13,6 +13,26 @@ other_grafts <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATA
 ```
 
 ```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(other_grafts$id_ind_r)
+for (col in names(other_grafts)) {
+  if(sum(is.na(other_grafts[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(other_grafts[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(other_grafts[[col]])),sum(is.na(other_grafts[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "other_grafts", append = TRUE)
+```
+Missing (NA) :
+
+    - year_og : 1 
+    - fail_og : 37 
+    - fail_immuno_og : 234 
+
+
+```{r}
 describe(other_grafts$num_og)
 describe(other_grafts$year_og)
 describe(other_grafts$type_og)

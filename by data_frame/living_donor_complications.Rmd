@@ -12,10 +12,44 @@ coltype <- c("text",rep("numeric",4),rep("text",3))
 suppressWarnings(living_donor_complications <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor_complications",na = "NA",col_types = coltype))
 ```
 
+```{r}
+living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor",na = "NA")
+ld_N <- living_donor[living_donor$center == "Nantes",]
+```
 
 ```{r}
-describe(living_donor_complications)
+ld_merge_N <- merge.data.frame(living_donor_complications,ld_N[,c(1,2)],by.x = "id_ind_d",by.y = "id_ind_ld", all.y = TRUE)
+ld_compli_N <- ld_merge_N[ld_merge_N$center == "Nantes",]
 ```
+
+
+```{r}
+describe(ld_compli_N)
+```
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(ld_compli_N$id_ind_d)
+for (col in names(ld_compli_N)) {
+  if(sum(is.na(ld_compli_N[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(ld_compli_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(ld_compli_N[[col]])),sum(is.na(ld_compli_N[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor_complications", append = TRUE)
+```
+Missing (NA) :
+
+    - day_compli_ld : 25 -> random
+    - month_compli_ld : 25 -> random
+    - year_compli_ld : 25 -> random
+    - age_compli_ld : 25 -> random
+    - class_compli_ld : 25 -> random
+    - name_compli_ld : 33 -> random
+    - precision_compli_ld : 230 -> replace by "No precision" ?
+
 
 ```{r}
 summary(living_donor_complications)

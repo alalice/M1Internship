@@ -26,10 +26,17 @@ describe(graft_b_N)
 ```
 
 ```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(graft_b_N$id_g)
 for (col in names(graft_b_N)) {
   if(sum(is.na(graft_b_N[[col]]))!= 0){
-    cat(col ,":" , sum(is.na(graft_b_N[[col]])),"\n")}
+    #cat(col ,":" , sum(is.na(donor_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(graft_b_N[[col]])),sum(is.na(graft_b_N[[col]]))/lenght,"random")}
 }
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "graft_base", append = TRUE)
 ```
 Missing (NA) :
 

@@ -11,11 +11,48 @@ suppressWarnings(library(readxl))
 living_donor_status <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor_status",na = "NA")
 ```
 
+```{r}
+living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor",na = "NA")
+ld_N <- living_donor[living_donor$center == "Nantes",]
+```
 
 ```{r}
-describe(living_donor_status)
+ld_merge_N <- merge.data.frame(living_donor_status,ld_N[,c(1,2)],by.x = "id_ind_d",by.y = "id_ind_ld", all.y = TRUE)
+ld_status_N <- ld_merge_N[ld_merge_N$center == "Nantes",]
 ```
+
 ```{r}
-summary(living_donor_status)
+describe(ld_status_N)
+```
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(ld_status_N$id_ind_d)
+for (col in names(ld_status_N)) {
+  if(sum(is.na(ld_status_N[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(ld_status_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(ld_status_N[[col]])),sum(is.na(ld_status_N[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor_status", append = TRUE)
+```
+Missing (NA) :
+    
+    - age_don_ld : 3 
+    - lola_study_id_ld : 142 -> remove ???
+    - sophie_study_id_ld : 290 -> remove ???
+    - max_Dsuivi_ld : 7 -> random
+    - max_Msuivi_ld : 7 -> random
+    - max_Ysuivi_ld : 7 -> random
+    - death_ld : 393 -> no death ? -> replace by 0000-00-00 ?
+    - date_death_ld : 371 -> no death ? -> replace by "N" ?
+    - causes_death_ld : 393 -> no death ? -> replace by "Not dead" ?
+
++ invert death_ld and date_death_ld column's names.
+
+```{r}
+summary(ld_status_N)
 ```
 

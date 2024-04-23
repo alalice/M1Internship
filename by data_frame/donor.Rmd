@@ -26,18 +26,25 @@ describe(donor)
 ```
 
 ```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(donor_N$id_ind_d)
 for (col in names(donor_N)) {
   if(sum(is.na(donor_N[[col]]))!= 0){
-    cat(col ,":" , sum(is.na(donor_N[[col]])),"\n")}
+    #cat(col ,":" , sum(is.na(donor_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(donor_N[[col]])),sum(is.na(donor_N[[col]]))/lenght,"random")}
 }
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "donor", append = TRUE)
 ```
 Missing (NA) :
 
 age_predon_d : 7 -> random ?
 type_cadaver_d : 3 -> random ?
 ecd_scd_d : 412 -> random ?
-height_predon_d : 231 -> random coorelated with w and bmi ?
-weight_predon_d : 231 -> ""
+height_predon_d : 231 -> random correlated with w and bmi ?
+weight_predon_d : 231 -> """
 bmi_predon_d : 231 -> """
 cmv_predon_d : 35 -> random ?
 ebv_predon_d : 83 -> random ?
