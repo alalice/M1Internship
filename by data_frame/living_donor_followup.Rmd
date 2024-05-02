@@ -1,0 +1,59 @@
+---
+title: "Exploration DIVAT living_donor_followup"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+coltype <- c("text",rep("numeric",10),"text",rep("numeric",3))
+suppressWarnings(living_donor_followup <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor_followup",na = "NA",col_types =coltype ))
+```
+
+```{r}
+living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor",na = "NA")
+#ld_N <- living_donor[living_donor$center == "Nantes",]
+```
+
+```{r}
+ld_merge_N <- merge.data.frame(living_donor_followup,living_donor[,c(1,2)],by.x = "id_ind_ld",by.y = "id_ind_ld", all.x = TRUE)
+ld_followup_N <- ld_merge_N[ld_merge_N$center == "Nantes",]
+```
+
+```{r}
+describe(living_donor_followup)
+```
+
+remove dysplemia_followup (to do : normalise wheight and maybe also creat)
+```{r}
+ld_followup_N <- ld_followup_N[,-12]
+```
+
+
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(ld_followup_N$id_ind_ld)
+for (col in names(ld_followup_N)) {
+  if(sum(is.na(ld_followup_N[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(ld_followup_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(ld_followup_N[[col]])),sum(is.na(ld_followup_N[[col]]))/lenght,"random")}
+}
+```
+
+
+```{r}
+addWorksheet(OUT, "living_donor_followup")
+writeData(OUT, sheet = "living_donor_followup", x = ld_followup_N,keepNA = TRUE)
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor_followup2", append = TRUE)
+```
+
+```{r}
+summary(living_donor_followup)
+```
+
