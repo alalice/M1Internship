@@ -8,16 +8,60 @@ output: html_document
 ```{r}
 suppressWarnings(library(Hmisc))
 suppressWarnings(library(readxl))
-coltype <- c("text","numeric","numeric","numeric","text","text","text","text")
-immun <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "immun",na = "NA",col_types = coltype)
+coltype <- c("numeric","numeric","numeric","numeric","guess","guess","numeric","guess")
+suppressWarnings(immun <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "immun",na = "NA",col_types = coltype))
+```
+
+```{r}
+immun_Nantes <- immun[complete.cases(immun$id_g),]
+```
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(immun_Nantes$id_g)
+for (col in names(immun_Nantes)) {
+  if(sum(is.na(immun_Nantes[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(immun_Nantes[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(immun_Nantes[[col]])),sum(is.na(immun_Nantes[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "immun", append = TRUE)
+```
+
+```{r}
+addWorksheet(OUT, "immun")
+writeData(OUT, sheet = "immun", x = immun_Nantes,keepNA = TRUE)
+```
+
+```{r}
+describe(immun_Nantes)
+```
+Missing (NA) : dsa_immun : 4916 -> replace by random ?
+
+```{r message=FALSE, warning=FALSE}
+library(mice)
+donnees_imputees <- mice(immun_Nantes, method = "cart", m = 5)  
+immun_Nantes <- complete(donnees_imputees)
 ```
 
 
 ```{r}
-describe(immun)
+summary(immun_Nantes)
 ```
 
-```{r}
-summary(immun)
+```{r warning=FALSE}
+library(gplots)
+library(corrplot)
+correlation_matrix <- cor(immun_Nantes[,-c(1,5,6)])
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10))
 ```
+
 

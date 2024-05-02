@@ -12,10 +12,141 @@ living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATA
 
 ```
 
+```{r}
+ld_N <- living_donor[living_donor$center == "Nantes",]
+```
+
 
 ```{r}
-describe(living_donor)
+describe(ld_N)
 ```
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(ld_N$id_ind_ld)
+for (col in names(ld_N)) {
+  if(sum(is.na(ld_N[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(ld_N[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(ld_N[[col]])),sum(is.na(ld_N[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor", append = TRUE)
+```
+Missing (NA) : 
+
+               - relation_rld : 36 -> replace by "no relationship" ?
+               - age_predon_d : 3 -> random
+               - weightKg_don_ld : 6 -> random
+               - heightCm_don_ld : 6 -> random
+               - bmi_don_ld : 6 -> -> random
+               - corp_surface_don_ld : 6 -> random
+               - abo_ld : 7 -> random
+               - birthWeightG_ld : 240 -> random
+               - htn_don_ld : 6 -> random
+               - holter_don_ld : 37 -> random or "Normal"
+               - diabetes_don_ld : 6 -> random
+               - dyslipidemia_don_ld : 7 -> random
+               - hdlGL_don_ld : 113 -> random
+               - ldlGL_don_ld : 73 -> random
+               - chstlGL_don_ld : 35 -> random
+               - triglycGL_don_ld : 22 -> random
+               - hepato_don_ld : 6 -> random
+               - smoker_ld : 7 -> random
+               - creat¬µmolL_don_ld : 6 -> random
+               - ckdepi_don_ld : 6 -> random
+               - protU_don_ld : 47 -> random
+               - microAlb_don_ld : 65 -> random ???
+               - clearCock_don_ld : 45 -> random
+               - clearIso_don_ld : 29 -> random
+               - c1cr_don_ld : 101 -> random ???
+               - hematU_don_ld : 12 -> random
+               - ecbu_don_ld : 12 -> random
+               - coag_don_ld : 14 -> random
+               - psa_don_ld : 329 -> non calculated -> remove column or change to no value ???
+               - radioPoumon_don_ld : 30 -> random
+               - scanAr_don_ld : 21 -> random
+               - nbArt_don_ld : 258 -> non notted -> remove column or change to no value ???
+               - nbVeine_don_ld : 382 -> non notted -> remove column or change to no value ???
+               - echoAbdo_don_ld : 22 -> random
+               - echoRenal_don_ld : 14 -> random
+               - echoR_anorm_don_ld : 348 -> no echo -> replace by "N" ?
+               - echoCard_don_ld : 103 -> random ???
+               - gyneco_don_ld : 169 -> random ???
+               - ecg_don_ld : 14 -> random
+               - crp_don_ld : 23 -> random
+               - eprot_don_ld : 12 -> random
+               - hiv_don_ld : 16 -> random
+               - agP24_don_ld : 120 -> random ???
+               - htlv_don_ld : 24 -> random
+               - hcv_don_ld : 20 -> random
+               - agHBs_don_ld : 12 -> random
+               - acHBc_don_ld : 14 -> random
+               - acHBs_don_ld : 75 -> random
+               - vdrl_don_ld : 27-> random
+               - tpha_don_ld : 27 -> random
+               - toxo_don_ld : 22 -> random
+               - cmv_don_ld : 19 -> random
+               - ebv_don_ld : 19 -> random
+               - bhisto_don_ld : 22 -> random
+               - bder_don_ld : 256 -> random ???
+               - tothisto_don_ld : 24 -> random
+               - totder_don_ld : 257 -> ????????????????????????????????????????????????????????
+               - histo_don_ld : 23 -> random
+               - tder_don_ld : 256 -> ??????????????????????????????????????????????????????????
+               - techniqueOp_ld : 5 -> random
+               - nephrect_ld : 6 -> random
+               - sondejj_ld : 290 -> only "Non", missing = "Oui" ?             
+               - dureeHospD_ld : 20 -> random
+               - nb_visits : 7 -> random
+               - max_day_ld : 7 -> random
+               - max_month_ld : 7 -> random
+               - max_year_ld : 7 -> random
+               - nb_visits_minus1year : 16 -> random
+               - max_CKDEPI_ld : 7 -> random
+               - min_CKDEPI_ld : 7 -> random
+               - mean_CKDEPI_ld : 7 -> random
+               - max_rcr_ld : 8 -> random
+               - min_rcr_ld : 8 -> random
+               - mean_rcr_ld : 8 -> random
+               - coefpente_CKDEPI_postdon : 14 -> random 
+               - r2_pente_CKDEPI_postdon : 14 -> random
+               - adj_r2_coefpente_CKDEPI_postdon : 25 -> random
+               - max_protU_ld : 100 -> no protU test ? -> random
+               - min_protU_ld : 100 -> no protU test ? -> random
+               - mean_protU_ld : 100 -> no protU test ? -> random
+               - max_MicroAlb_ld : 100 -> no MicroAlb test ? -> random
+               - min_MicroAlb_ld : 100 -> no MicroAlb test ? -> random
+               - mean_MicroAlb_ld : 100 -> no MicroAlb test ? -> random               
+               - max_HDL_ld : 92 -> no HDL test ? -> random
+               - min_HDL_ld : 92 -> no HDL test ? -> random
+               - mean_HDL_ld : 92 -> no HDL test ? -> random
+               - max_LDL_ld : 93 -> no LDL test ? -> random
+               - min_LDL_ld : 93 -> no LDL test ? -> random
+               - mean_LDL_ld : 93 -> no LDL test ? -> random
+
+Replace somme NA
+```{r}
+ld_N$htn_don_ld[is.na(ld_N$htlv_don_ld)]<- 0
+ld_N$diabetes_don_ld[is.na(ld_N$diabetes_don_ld)]<- 0
+ld_N$dyslipidemia_don_ld[is.na(ld_N$dyslipidemia_don_ld)]<- 0
+```
+
+Remove some columns
+```{r}
+ld_N <- ld_N[,-c(33,36,37,71:93)]
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor2", append = TRUE)
+```
+
+```{r}
+addWorksheet(OUT, "living_donor")
+writeData(OUT, sheet = "living_donor", x = ld_N,keepNA = TRUE)
+```
+
 
 
 ```{r}

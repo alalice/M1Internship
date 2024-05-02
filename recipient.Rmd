@@ -8,12 +8,29 @@ output: html_document
 ```{r}
 suppressWarnings(library(Hmisc))
 suppressWarnings(library(readxl))
-coltype <- c("text","text","guess","guess","date")
-recipient <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "recipient",na = "NA",col_types = coltype)
+coltype <- c("numeric","text","guess","guess","date")
+suppressWarnings(recipient <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "recipient",na = "NA",col_types = coltype))
 coltype <- c("text","guess","text","guess")
 individual <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "individual",na = "NA",col_types = coltype)
 ```
 
+```{r}
+recipient_Nantes <- recipient[complete.cases(recipient$id_r),]
+```
+
+```{r}
+dataframe <- data.frame(row.names = c("missing","part","coments") )
+lenght <- length(recipient_Nantes$id_r)
+for (col in names(recipient_Nantes)) {
+  if(sum(is.na(recipient_Nantes[[col]]))!= 0){
+    #cat(col ,":" , sum(is.na(recipient_Nantes[[col]])),"\n")}
+    dataframe[col] <- c(sum(is.na(recipient_Nantes[[col]])),sum(is.na(recipient_Nantes[[col]]))/lenght,"random")}
+}
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "recipient", append = TRUE)
+```
 
 ```{r}
 describe(recipient)
