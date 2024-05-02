@@ -30,6 +30,10 @@ for (col in names(immun_Nantes)) {
 write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "immun", append = TRUE)
 ```
 
+```{r}
+addWorksheet(OUT, "immun")
+writeData(OUT, sheet = "immun", x = immun_Nantes,keepNA = TRUE)
+```
 
 ```{r}
 describe(immun_Nantes)

@@ -10,6 +10,7 @@ suppressWarnings(library(Hmisc))
 suppressWarnings(library(readxl))
 suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
+suppressWarnings(library(xlsx))
 coltype <- c("text",rep("numeric",94))
 suppressWarnings(complications_graft <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "complications_graft",na = "NA",col_types = coltype))
 ```
@@ -21,6 +22,19 @@ compli_N_test <- as.numeric(complications_graft$id_g)
 compliG_N <- complications_graft[complications_graft$id_g == compli_N_test,]
 compliG_N <- compliG_N[complete.cases(compliG_N$id_g),]
 ```
+replace the missing delay (as no event) by -2
+```{r}
+compliG_N_A <- compliG_N[,-c(1,81,84,85,87,89,90,92,93,94,95)]
+for (col in names(compliG_N_A)) {
+  compliG_N[[col]][is.na(compliG_N_A[[col]])] <- -2
+}
+```
+
+Remove recurrence_fsgs (not an off datas) 
+```{r}
+compliG_N <- compliG_N[,-95]
+```
+
 
 ```{r}
 describe(compliG_N)
@@ -56,14 +70,20 @@ for (col in names(compliG_N)) {
 ```  
 
 ```{r}
-write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "complications_graft", append = TRUE)
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "complications_graft2", append = TRUE)
 ```
-               
+              
 ```{r}
-compliG_N_A <- compliG_N[,-c(1,84,85,86,87,88,89,90,91,92,93,94,95)]
-for (col in names(compliG_N_A)) {
-  compliG_N_A[[col]][is.na(compliG_N_A[[col]])] <- -2
-}
+compliG_N <- data.frame(sapply(compliG_N,as.character))
+```
+
+```{r}
+addWorksheet(OUT, "complications_graft")
+writeData(OUT, sheet = "complications_graft", x = compliG_N,keepNA = TRUE)
+```
+    
+```{r}
+write.xlsx(compliG_N, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\ALL_VARIABLES_KITGENIE_CLEAN.xlsx",sheetName = "complications_graft", append = TRUE)
 ```
 
 

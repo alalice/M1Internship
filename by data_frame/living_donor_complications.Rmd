@@ -14,12 +14,11 @@ suppressWarnings(living_donor_complications <- read_excel("C:\\Alice\\1-Universi
 
 ```{r}
 living_donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "living_donor",na = "NA")
-ld_N <- living_donor[living_donor$center == "Nantes",]
 ```
 
 ```{r}
-ld_merge_N <- merge.data.frame(living_donor_complications,ld_N[,c(1,2)],by.x = "id_ind_d",by.y = "id_ind_ld", all.y = TRUE)
-ld_compli_N <- ld_merge_N[ld_merge_N$center == "Nantes",]
+ld_merge_N <- merge.data.frame(living_donor_complications,living_donor[,c(1,2)],by.x = "id_ind_d",by.y = "id_ind_ld", all.x =  TRUE)
+ld_compli_N <- ld_merge_N[ld_merge_N$center== "Nantes",]
 ```
 
 
@@ -50,6 +49,10 @@ Missing (NA) :
     - name_compli_ld : 33 -> random
     - precision_compli_ld : 230 -> replace by "No precision" ?
 
+```{r}
+addWorksheet(OUT, "living_donor_complications")
+writeData(OUT, sheet = "living_donor_complications", x = ld_N,keepNA = TRUE)
+```
 
 ```{r}
 summary(living_donor_complications)

@@ -126,6 +126,29 @@ Missing (NA) :
                - min_LDL_ld : 93 -> no LDL test ? -> random
                - mean_LDL_ld : 93 -> no LDL test ? -> random
 
+Replace somme NA
+```{r}
+ld_N$htn_don_ld[is.na(ld_N$htlv_don_ld)]<- 0
+ld_N$diabetes_don_ld[is.na(ld_N$diabetes_don_ld)]<- 0
+ld_N$dyslipidemia_don_ld[is.na(ld_N$dyslipidemia_don_ld)]<- 0
+```
+
+Remove some columns
+```{r}
+ld_N <- ld_N[,-c(33,36,37,71:93)]
+```
+
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "living_donor2", append = TRUE)
+```
+
+```{r}
+addWorksheet(OUT, "living_donor")
+writeData(OUT, sheet = "living_donor", x = ld_N,keepNA = TRUE)
+```
+
+
+
 ```{r}
 summary(living_donor)
 ```

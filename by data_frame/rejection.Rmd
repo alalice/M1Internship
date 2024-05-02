@@ -35,6 +35,11 @@ write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DA
 ```
 
 ```{r}
+addWorksheet(OUT, "rejection")
+writeData(OUT, sheet = "rejection", x = rejection,keepNA = TRUE)
+```
+
+```{r}
 summary(rejection)
 ```
 

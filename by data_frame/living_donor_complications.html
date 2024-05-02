@@ -367,52 +367,64 @@ living_donor_complications</h1>
 <pre class="r"><code>suppressWarnings(library(readxl))
 coltype &lt;- c(&quot;text&quot;,rep(&quot;numeric&quot;,4),rep(&quot;text&quot;,3))
 suppressWarnings(living_donor_complications &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx&quot;, sheet = &quot;living_donor_complications&quot;,na = &quot;NA&quot;,col_types = coltype))</code></pre>
-<pre class="r"><code>describe(living_donor_complications)</code></pre>
-<pre><code>## living_donor_complications 
+<pre class="r"><code>living_donor &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx&quot;, sheet = &quot;living_donor&quot;,na = &quot;NA&quot;)
+ld_N &lt;- living_donor[living_donor$center == &quot;Nantes&quot;,]</code></pre>
+<pre class="r"><code>ld_merge_N &lt;- merge.data.frame(living_donor_complications,ld_N[,c(1,2)],by.x = &quot;id_ind_d&quot;,by.y = &quot;id_ind_ld&quot;, all.y = TRUE)
+ld_compli_N &lt;- ld_merge_N[ld_merge_N$center == &quot;Nantes&quot;,]</code></pre>
+<pre class="r"><code>describe(ld_compli_N)</code></pre>
+<pre><code>## ld_compli_N 
 ## 
-##  8  Variables      3630  Observations
+##  9  Variables      678  Observations
 ## --------------------------------------------------------------------------------
 ## id_ind_d 
 ##        n  missing distinct 
-##     3630        0      690 
+##      678        0      395 
 ## 
-## lowest : 100279 100432 100534 100578 100796, highest: NA64   NA7    NA70   NA71   NA72  
+## lowest : 100279 100432 100534 100578 100796, highest: NA7    NA70   NA71   NA72   NA8   
 ## --------------------------------------------------------------------------------
 ## day_compli_ld 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     3630        0     2072    0.999     2048     2316        0        1 
+##      653       25      212    0.838    545.2    888.8        0        0 
 ##      .25      .50      .75      .90      .95 
-##       91     1466     3337     5467     6455 
+##        0        0      563     2216     3022 
 ## 
-## lowest :    0    1    2    3    4, highest: 8061 8075 8138 8191 8229
+## lowest :    0    1    2    3    4, highest: 4956 5451 5490 5566 5832
 ## --------------------------------------------------------------------------------
 ## month_compli_ld 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     3630        0      264    0.993    67.28    76.11        0        0 
+##      653       25       93    0.749    17.86    29.13      0.0      0.0 
 ##      .25      .50      .75      .90      .95 
-##        3       48      110      180      212 
+##      0.0      0.0     18.0     72.8     99.0 
 ## 
-## lowest :   0   1   2   3   4, highest: 264 265 267 269 270
+## lowest :   0   1   2   3   4, highest: 162 179 180 182 191
 ## --------------------------------------------------------------------------------
 ## year_compli_ld 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     3630        0       24    0.975    5.592    6.342        0        0 
+##      653       25       17    0.668     1.49    2.434        0        0 
 ##      .25      .50      .75      .90      .95 
-##        0        4        9       15       18 
+##        0        0        2        6        8 
+##                                                                             
+## Value          0     1     2     3     4     5     6     7     8     9    10
+## Frequency    452    36    35    28     8    19    12    22     9     7    10
+## Proportion 0.692 0.055 0.054 0.043 0.012 0.029 0.018 0.034 0.014 0.011 0.015
+##                                               
+## Value         11    12    13    14    15    16
+## Frequency      5     2     2     1     4     1
+## Proportion 0.008 0.003 0.003 0.002 0.006 0.002
 ## 
-## lowest :  0  1  2  3  4, highest: 19 20 21 22 23
+## For the frequency table, variable is rounded to the nearest 0
 ## --------------------------------------------------------------------------------
 ## age_compli_ld 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     3524      106      521        1    56.16    13.52     37.0     40.2 
+##      653       25       56    0.999    48.78    13.11       29       34 
 ##      .25      .50      .75      .90      .95 
-##     48.0     56.7     65.0     71.1     74.8 
+##       40       49       57       64       67 
 ## 
-## lowest : 20   21   21.9 22   22.4, highest: 85.8 86   86.1 87.1 87.6
+## lowest : 20 21 22 23 24, highest: 72 73 75 76 81
 ## --------------------------------------------------------------------------------
 ## class_compli_ld 
 ##        n  missing distinct 
-##      653     2977        4 
+##      653       25        4 
 ##                                                                       
 ## Value      peri-operatory       physical post-operatory    psychologia
 ## Frequency               2            204            426             21
@@ -420,18 +432,45 @@ suppressWarnings(living_donor_complications &lt;- read_excel(&quot;C:\\Alice\\1-
 ## --------------------------------------------------------------------------------
 ## name_compli_ld 
 ##        n  missing distinct 
-##     3622        8       66 
+##      645       33       19 
 ## 
-## lowest : Autre                                              cardio-vascular Complication                       cardio-vascular Complication;bronchial infection   cardio-vascular Complication;Diabetes              cardio-vascular Complication;Diabetes;Dyslipidemia
-## highest: Renal Complication;Dyslipidemia;Diabetes           Reprise chirurgicale                               Saignement sans TS                                 Sur-infection paroi                                Trb du rythme                                     
+## lowest : Autre                          Complication cardio-vasculaire Complication chirurgicale      Complication digestive         Complication infectieuse      
+## highest: Proteinurie                    Reprise chirurgicale           Saignement sans TS             Sur-infection paroi            Trb du rythme                 
 ## --------------------------------------------------------------------------------
 ## precision_compli_ld 
 ##        n  missing distinct 
-##      448     3182       14 
+##      448      230       14 
 ## 
 ## lowest : Autre                     Douleurs post operatoires Embolie pulmonaire        Infection bronchique      Infection urinaire       
 ## highest: Saignement avec TS        Saignement sans TS        Septicemie                Sur-infection paroi       traitee                  
+## --------------------------------------------------------------------------------
+## center 
+##        n  missing distinct    value 
+##      678        0        1   Nantes 
+##                  
+## Value      Nantes
+## Frequency     678
+## Proportion      1
 ## --------------------------------------------------------------------------------</code></pre>
+<pre class="r"><code>for (col in names(ld_compli_N)) {
+  if(sum(is.na(ld_compli_N[[col]]))!= 0){
+    cat(col ,&quot;:&quot; , sum(is.na(ld_compli_N[[col]])),&quot;\n&quot;)}
+}</code></pre>
+<pre><code>## day_compli_ld : 25 
+## month_compli_ld : 25 
+## year_compli_ld : 25 
+## age_compli_ld : 25 
+## class_compli_ld : 25 
+## name_compli_ld : 33 
+## precision_compli_ld : 230</code></pre>
+<p>Missing (NA) :</p>
+<pre><code>- day_compli_ld : 25 -&gt; random
+- month_compli_ld : 25 -&gt; random
+- year_compli_ld : 25 -&gt; random
+- age_compli_ld : 25 -&gt; random
+- class_compli_ld : 25 -&gt; random
+- name_compli_ld : 33 -&gt; random
+- precision_compli_ld : 230 -&gt; replace by &quot;No precision&quot; ?</code></pre>
 <pre class="r"><code>summary(living_donor_complications)</code></pre>
 <pre><code>##    id_ind_d         day_compli_ld  month_compli_ld  year_compli_ld  
 ##  Length:3630        Min.   :   0   Min.   :  0.00   Min.   : 0.000  

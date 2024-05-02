@@ -20,7 +20,17 @@ individual_N <- individual[complete.cases(individual$id_ind),]
 ```{r}
 describe(individual_N)
 ```
-Missing (NA) : abo_ind : 12 -> random 
+Replace ABO NA when already known and suppress double row:
+
+```{r}
+ind_w_noNA <- individual_N[!is.na(individual_N$abo_ind),c(1,4)]
+ind_w_noNA<-unique(ind_w_noNA)
+
+for (i in unique(ind_w_noNA$id_ind)) {
+  individual_N$abo_ind[individual_N$id_ind == i & is.na(individual_N$abo_ind)] <- ind_w_noNA$abo_ind[ind_w_noNA$id_ind == i]
+}
+individual_N <- unique(individual_N)
+```
 
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
@@ -36,10 +46,14 @@ for (col in names(individual_N)) {
 write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "individual", append = TRUE)
 ```
 
-```{r message=FALSE, warning=FALSE}
-library(mice)
-donnees_imputees <- mice(individual_N, method = "cart", m = 5)  
-individual_N <- complete(donnees_imputees)
+```{r}
+OUT <- loadWorkbook("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN.xlsx")
+```
+
+
+```{r}
+addWorksheet(OUT, "individual")
+writeData(OUT, sheet = "individual", x = individual_N,keepNA = TRUE)
 ```
 
 ```{r}

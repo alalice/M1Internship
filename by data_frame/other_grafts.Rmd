@@ -22,14 +22,22 @@ for (col in names(other_grafts)) {
 }
 ```
 
-```{r}
-write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "other_grafts", append = TRUE)
-```
 Missing (NA) :
 
     - year_og : 1 
     - fail_og : 37 
     - fail_immuno_og : 234 
+    
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "other_grafts", append = TRUE)
+```
+
+```{r}
+addWorksheet(OUT, "other_grafts")
+writeData(OUT, sheet = "other_grafts", x = other_grafts,keepNA = TRUE)
+```
+
+
 
 
 ```{r}

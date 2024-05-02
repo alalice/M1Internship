@@ -20,6 +20,20 @@ graft_b_N_test <- as.numeric(graft_base$id_g)
 graft_b_N <- graft_base[graft_base$id_g == graft_b_N_test,]
 graft_b_N <- graft_b_N[complete.cases(graft_b_N$id_g),]
 ```
+Remove precisions disease
+```{r}
+graft_b_N <- graft_b_N[,-16]
+```
+
+Replace NA and add column traitement_ind
+```{r}
+graft_b_N$rank_g[is.na(graft_b_N$rank_g)]<-1
+graft_b_N$traitement_ind <- ifelse(is.na(graft_b_N$day_ttt_ind),0,1)
+graft_b_N<- graft_b_N %>% relocate(traitement_ind, .after = code_ttt_ind)
+graft_b_N$day_ttt_ind[is.na(graft_b_N$day_ttt_ind)]<-0
+graft_b_N$mach_perf[is.na(graft_b_N$mach_perf)]<-0
+```
+
 
 ```{r}
 describe(graft_b_N)
@@ -36,7 +50,7 @@ for (col in names(graft_b_N)) {
 ```
 
 ```{r}
-write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "graft_base", append = TRUE)
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "graft_base2", append = TRUE)
 ```
 Missing (NA) :
 
@@ -65,6 +79,11 @@ day_ttt_ind : 1508 -> ???
 prophyl_pnc_g : 41 -> random
 prophyl_cmv_g : 36 -> random
 
+
+```{r}
+addWorksheet(OUT, "graft_base")
+writeData(OUT, sheet = "graft_base", x = graft_b_N,keepNA = TRUE)
+```
 
 ```{r}
 summary(graft_base)

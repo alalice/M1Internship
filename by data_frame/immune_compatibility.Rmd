@@ -47,10 +47,11 @@ incomp_bdr : 12
 incomp_abdr : 12 
 
 ```{r}
-library(mice)
-donnees_imputees <- mice(immune_compatibility_N, method = "cart", m = 5)  
-immune_compatibility_N <- complete(donnees_imputees)
+addWorksheet(OUT, "immune_compatibility")
+writeData(OUT, sheet = "immune_compatibility", x = immune_compatibility_N,keepNA = TRUE)
 ```
+
+
 
 ```{r}
 describe(immune_compatibility_N)

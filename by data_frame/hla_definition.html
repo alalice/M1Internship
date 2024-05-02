@@ -364,25 +364,30 @@ display: none;
 ## 
 ##     format.pval, units</code></pre>
 <pre class="r"><code>suppressWarnings(library(readxl))
-coltype &lt;- c(&quot;text&quot;,rep(&quot;guess&quot;,56))
-hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx&quot;, sheet = &quot;hla_definition&quot;,na = &quot;NA&quot;,col_types = coltype)</code></pre>
-<pre><code>## Warning: Expecting logical in Q7119 / R7119C17: got &#39;-&#39;</code></pre>
+coltype &lt;- c(&quot;numeric&quot;,rep(&quot;guess&quot;,56))
+suppressWarnings(hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx&quot;, sheet = &quot;hla_definition&quot;,na = &quot;NA&quot;,col_types = coltype))</code></pre>
 <p>R_PRG390 : efs_a2 = - (removed in the data frame, is it a NA ?)</p>
-<pre class="r"><code>describe(hla_definition)</code></pre>
-<pre><code>## hla_definition 
+<pre class="r"><code>hla_def_Nantes &lt;- hla_definition[complete.cases(hla_definition$id_ind),]</code></pre>
+<pre class="r"><code>describe(hla_def_Nantes)</code></pre>
+<pre><code>## hla_def_Nantes 
 ## 
-##  57  Variables      8791  Observations
+##  57  Variables      6377  Observations
 ## --------------------------------------------------------------------------------
 ## id_ind 
-##        n  missing distinct 
-##     8791        0     8244 
+##         n   missing  distinct      Info      Mean       Gmd       .05       .10 
+##      6377         0      5830         1 509726729 500395651 1.704e+04 2.843e+04 
+##       .25       .50       .75       .90       .95 
+## 6.731e+04 1.001e+09 1.001e+09 1.001e+09 1.001e+09 
+##                       
+## Value      0e+00 1e+09
+## Frequency   3130  3247
+## Proportion 0.491 0.509
 ## 
-## lowest : 100059     1001000003 1001000025 1001000047 1001000048
-## highest: R_TUF56    R_TUF57    R_TUF59    R_TUF60    R_TUF61   
+## For the frequency table, variable is rounded to the nearest 10000000
 ## --------------------------------------------------------------------------------
 ## divat_a1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6474     2317       22    0.911    6.942    8.673        1        1 
+##     6365       12       22    0.911    6.959    8.697        1        1 
 ##      .25      .50      .75      .90      .95 
 ##        2        2        3       24       29 
 ## 
@@ -390,7 +395,7 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_a2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6474     2317       27    0.991    20.08    18.37        0        0 
+##     6365       12       27    0.991     20.1    18.36        0        0 
 ##      .25      .50      .75      .90      .95 
 ##        3       24       30       32       68 
 ## 
@@ -398,15 +403,15 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_b1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6473     2318       48    0.986    26.42    20.53        7        7 
+##     6364       13       47    0.986    26.52    20.56        7        7 
 ##      .25      .50      .75      .90      .95 
 ##        8       18       44       51       61 
 ## 
-## lowest :  0  5  7  8 12, highest: 71 72 73 75 77
+## lowest :  5  7  8 12 13, highest: 71 72 73 75 77
 ## --------------------------------------------------------------------------------
 ## divat_b2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6474     2317       53    0.993    40.15    20.32        0        8 
+##     6365       12       53    0.993    40.31    20.24        0        8 
 ##      .25      .50      .75      .90      .95 
 ##       35       44       53       60       62 
 ## 
@@ -414,15 +419,23 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dr1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6472     2319       21     0.98    7.319    6.839        1        1 
+##     6364       13       20     0.98    7.358    6.867        1        1 
 ##      .25      .50      .75      .90      .95 
 ##        3        4       11       15       17 
+##                                                                             
+## Value          1     2     3     4     5     6     7     8     9    10    11
+## Frequency   1170   108   785  1335    13     8   757   177    70    73   573
+## Proportion 0.184 0.017 0.123 0.210 0.002 0.001 0.119 0.028 0.011 0.011 0.090
+##                                                                 
+## Value         12    13    14    15    16    17    18    95   103
+## Frequency     58   450    74   319    52   284     4    51     3
+## Proportion 0.009 0.071 0.012 0.050 0.008 0.045 0.001 0.008 0.000
 ## 
-## lowest :   0   1   2   3   4, highest:  16  17  18  95 103
+## For the frequency table, variable is rounded to the nearest 0
 ## --------------------------------------------------------------------------------
 ## divat_dr2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     6472     2319       21    0.987     9.64    6.426        0        0 
+##     6364       13       21    0.987    9.686    6.432        0        0 
 ##      .25      .50      .75      .90      .95 
 ##        4       11       14       15       16 
 ## 
@@ -430,7 +443,7 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dqa1 
 ##        n  missing distinct     Info     Mean      Gmd 
-##      221     8570        5    0.677    1.643   0.9846 
+##      221     6156        5    0.677    1.643   0.9846 
 ##                                         
 ## Value          1     2     3     4     5
 ## Frequency    151    23    31     7     9
@@ -440,7 +453,7 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dqa2 
 ##        n  missing distinct     Info     Mean      Gmd 
-##      221     8570        7    0.917    3.181    2.086 
+##      221     6156        7    0.917    3.181    2.086 
 ##                                                     
 ## Value          0     1     2     3     4     5     6
 ## Frequency     28    26    26    39     6    92     4
@@ -450,13 +463,13 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dq1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     5860     2931       12    0.953    3.745    2.504        1        1 
+##     5836      541       12    0.953    3.748    2.506      1.0      1.5 
 ##      .25      .50      .75      .90      .95 
-##        2        3        5        7        7 
+##      2.0      3.0      5.0      7.0      7.0 
 ##                                                                             
 ## Value          0     1     2     3     4     5     6     7     8     9   301
-## Frequency      4   584  1945  1017   160   829   492   583   198    46     1
-## Proportion 0.001 0.100 0.332 0.174 0.027 0.141 0.084 0.099 0.034 0.008 0.000
+## Frequency      4   580  1938  1010   160   826   489   583   198    46     1
+## Proportion 0.001 0.099 0.332 0.173 0.027 0.142 0.084 0.100 0.034 0.008 0.000
 ##                 
 ## Value        302
 ## Frequency      1
@@ -466,12 +479,12 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dq2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     5858     2933       13    0.969     3.96        3        0        0 
+##     5834      543       13    0.969    3.962        3        0        0 
 ##      .25      .50      .75      .90      .95 
 ##        2        5        6        7        8 
 ##                                                                             
 ## Value          0     1     2     3     4     5     6     7     8     9    11
-## Frequency   1270   123   389   755   207   825  1440   499   262    85     1
+## Frequency   1265   121   386   752   205   822  1437   498   260    85     1
 ## Proportion 0.217 0.021 0.066 0.129 0.035 0.141 0.246 0.085 0.045 0.015 0.000
 ##                       
 ## Value         13    60
@@ -482,13 +495,13 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_cw1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     1241     7550       16    0.976    5.143    2.985        1        2 
+##     1239     5138       16    0.976    5.142    2.987        1        2 
 ##      .25      .50      .75      .90      .95 
 ##        3        5        7        7       10 
 ##                                                                             
 ## Value          0     1     2     3     4     5     6     7     8     9    10
-## Frequency      2    91   116   147   215   157    95   296    14    31    36
-## Proportion 0.002 0.073 0.093 0.118 0.173 0.127 0.077 0.239 0.011 0.025 0.029
+## Frequency      2    91   116   147   215   156    95   295    14    31    36
+## Proportion 0.002 0.073 0.094 0.119 0.174 0.126 0.077 0.238 0.011 0.025 0.029
 ##                                         
 ## Value         12    14    15    16    62
 ## Frequency     25     8     5     2     1
@@ -498,29 +511,29 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_cw2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##     1240     7551       17    0.965    8.643    5.288        0        3 
+##     1238     5139       17    0.965    8.633    5.285        0        3 
 ##      .25      .50      .75      .90      .95 
 ##        6        7       12       16       16 
 ##                                                                             
 ## Value          0     1     2     3     4     5     6     7     8     9    10
 ## Frequency    102     1     5    23    65    76    57   390    84     9    15
-## Proportion 0.082 0.001 0.004 0.019 0.052 0.061 0.046 0.315 0.068 0.007 0.012
+## Proportion 0.082 0.001 0.004 0.019 0.053 0.061 0.046 0.315 0.068 0.007 0.012
 ##                                               
 ## Value         12    14    15    16    17    18
-## Frequency    105    52    88   145    20     3
-## Proportion 0.085 0.042 0.071 0.117 0.016 0.002
+## Frequency    105    51    87   145    20     3
+## Proportion 0.085 0.041 0.070 0.117 0.016 0.002
 ## 
 ## For the frequency table, variable is rounded to the nearest 0
 ## --------------------------------------------------------------------------------
 ## divat_dp1 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##      964     7827       17    0.894     4.12    3.396        1        1 
+##      963     5414       17    0.894    4.121    3.399        1        1 
 ##      .25      .50      .75      .90      .95 
 ##        2        3        4        4        4 
 ##                                                                             
 ## Value          0     1     2     3     4     5     6     9    10    11    13
-## Frequency      1   105   261   132   419     7     4     1     5     7     7
-## Proportion 0.001 0.109 0.271 0.137 0.435 0.007 0.004 0.001 0.005 0.007 0.007
+## Frequency      1   105   261   131   419     7     4     1     5     7     7
+## Proportion 0.001 0.109 0.271 0.136 0.435 0.007 0.004 0.001 0.005 0.007 0.007
 ##                                               
 ## Value         14    16    18   104   124   131
 ## Frequency      4     1     2     6     1     1
@@ -530,81 +543,108 @@ hla_definition &lt;- read_excel(&quot;C:\\Alice\\1-Universitée\\Stages\\M1-cent
 ## --------------------------------------------------------------------------------
 ## divat_dp2 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##      964     7827       31    0.928    9.323    11.66        0        0 
+##      963     5414       31    0.928    9.318    11.66        0        0 
 ##      .25      .50      .75      .90      .95 
 ##        4        4       10       17       20 
 ## 
 ## lowest :   0   1   2   3   4, highest: 105 131 133 135 414
 ## --------------------------------------------------------------------------------
-## efs_a1 
-##        n  missing distinct    value 
-##     2130     6661        1     TRUE 
-##                
-## Value      TRUE
-## Frequency  2130
-## Proportion    1
-## --------------------------------------------------------------------------------
-## efs_a2 
-##        n  missing distinct 
-##     2131     6660        2 
-##                       
-## Value      FALSE  TRUE
-## Frequency    289  1842
-## Proportion 0.136 0.864
-## --------------------------------------------------------------------------------
-## efs_b1 
-##        n  missing distinct    value 
-##     2130     6661        1     TRUE 
-##                
-## Value      TRUE
-## Frequency  2130
-## Proportion    1
-## --------------------------------------------------------------------------------
-## efs_b2 
-##        n  missing distinct 
-##     2132     6659        2 
-##                       
-## Value      FALSE  TRUE
-## Frequency    154  1978
-## Proportion 0.072 0.928
-## --------------------------------------------------------------------------------
-## efs_dr1 
-##        n  missing distinct    value 
-##     2129     6662        1     TRUE 
-##                
-## Value      TRUE
-## Frequency  2129
-## Proportion    1
-## --------------------------------------------------------------------------------
-## efs_dr2 
-##        n  missing distinct 
-##     2132     6659        2 
-##                       
-## Value      FALSE  TRUE
-## Frequency    261  1871
-## Proportion 0.122 0.878
-## --------------------------------------------------------------------------------
 ## 
 ## Variables with all observations missing:
 ## 
-##  [1] efs_dqa1         efs_dqa2         efs_dq1          efs_dq2         
-##  [5] efs_cw1          efs_cw2          efs_dp1          efs_dp2         
-##  [9] easyhlaup_a1     easyhlaup_a2     easyhlaup_b1     easyhlaup_b2    
-## [13] easyhlaup_dr1    easyhlaup_dr2    easyhlaup_dqa1   easyhlaup_dqa2  
-## [17] easyhlaup_dq1    easyhlaup_dq2    easyhlaup_cw1    easyhlaup_cw2   
-## [21] easyhlaup_dp1    easyhlaup_dp2    hibagsnphla_a1   hibagsnphla_a2  
-## [25] hibagsnphla_b1   hibagsnphla_b2   hibagsnphla_dr1  hibagsnphla_dr2 
-## [29] hibagsnphla_dqa1 hibagsnphla_dqa2 hibagsnphla_dq1  hibagsnphla_dq2 
-## [33] hibagsnphla_cw1  hibagsnphla_cw2  hibagsnphla_dp1  hibagsnphla_dp2</code></pre>
+##  [1] efs_a1           efs_a2           efs_b1           efs_b2          
+##  [5] efs_dr1          efs_dr2          efs_dqa1         efs_dqa2        
+##  [9] efs_dq1          efs_dq2          efs_cw1          efs_cw2         
+## [13] efs_dp1          efs_dp2          easyhlaup_a1     easyhlaup_a2    
+## [17] easyhlaup_b1     easyhlaup_b2     easyhlaup_dr1    easyhlaup_dr2   
+## [21] easyhlaup_dqa1   easyhlaup_dqa2   easyhlaup_dq1    easyhlaup_dq2   
+## [25] easyhlaup_cw1    easyhlaup_cw2    easyhlaup_dp1    easyhlaup_dp2   
+## [29] hibagsnphla_a1   hibagsnphla_a2   hibagsnphla_b1   hibagsnphla_b2  
+## [33] hibagsnphla_dr1  hibagsnphla_dr2  hibagsnphla_dqa1 hibagsnphla_dqa2
+## [37] hibagsnphla_dq1  hibagsnphla_dq2  hibagsnphla_cw1  hibagsnphla_cw2 
+## [41] hibagsnphla_dp1  hibagsnphla_dp2</code></pre>
+<pre class="r"><code>for (col in names(hla_def_Nantes)) {
+  if(sum(is.na(hla_def_Nantes[[col]]))!= 0){
+    cat(col ,&quot;:&quot; , sum(is.na(hla_def_Nantes[[col]])),&quot;\n&quot;)}
+}</code></pre>
+<pre><code>## divat_a1 : 12 
+## divat_a2 : 12 
+## divat_b1 : 13 
+## divat_b2 : 12 
+## divat_dr1 : 13 
+## divat_dr2 : 13 
+## divat_dqa1 : 6156 
+## divat_dqa2 : 6156 
+## divat_dq1 : 541 
+## divat_dq2 : 543 
+## divat_cw1 : 5138 
+## divat_cw2 : 5139 
+## divat_dp1 : 5414 
+## divat_dp2 : 5414 
+## efs_a1 : 6377 
+## efs_a2 : 6377 
+## efs_b1 : 6377 
+## efs_b2 : 6377 
+## efs_dr1 : 6377 
+## efs_dr2 : 6377 
+## efs_dqa1 : 6377 
+## efs_dqa2 : 6377 
+## efs_dq1 : 6377 
+## efs_dq2 : 6377 
+## efs_cw1 : 6377 
+## efs_cw2 : 6377 
+## efs_dp1 : 6377 
+## efs_dp2 : 6377 
+## easyhlaup_a1 : 6377 
+## easyhlaup_a2 : 6377 
+## easyhlaup_b1 : 6377 
+## easyhlaup_b2 : 6377 
+## easyhlaup_dr1 : 6377 
+## easyhlaup_dr2 : 6377 
+## easyhlaup_dqa1 : 6377 
+## easyhlaup_dqa2 : 6377 
+## easyhlaup_dq1 : 6377 
+## easyhlaup_dq2 : 6377 
+## easyhlaup_cw1 : 6377 
+## easyhlaup_cw2 : 6377 
+## easyhlaup_dp1 : 6377 
+## easyhlaup_dp2 : 6377 
+## hibagsnphla_a1 : 6377 
+## hibagsnphla_a2 : 6377 
+## hibagsnphla_b1 : 6377 
+## hibagsnphla_b2 : 6377 
+## hibagsnphla_dr1 : 6377 
+## hibagsnphla_dr2 : 6377 
+## hibagsnphla_dqa1 : 6377 
+## hibagsnphla_dqa2 : 6377 
+## hibagsnphla_dq1 : 6377 
+## hibagsnphla_dq2 : 6377 
+## hibagsnphla_cw1 : 6377 
+## hibagsnphla_cw2 : 6377 
+## hibagsnphla_dp1 : 6377 
+## hibagsnphla_dp2 : 6377</code></pre>
+<p>remove the columns from 16 to 57 as there are all completely
+empty.</p>
+<pre class="r"><code>hla_def_Nantes &lt;- hla_def_Nantes[,-c(16:57)]</code></pre>
+<p>Missing (NA) :</p>
+<p>divat_a1 : 12 -&gt; replace by random ? divat_a2 : 12 -&gt; replace
+by random ? divat_b1 : 13 -&gt; replace by random ? divat_b2 : 12 -&gt;
+replace by random ? divat_dr1 : 13 -&gt; replace by random ? divat_dr2 :
+13 -&gt; replace by random ? divat_dqa1 : 6156 -&gt; many values missing
+divat_dqa2 : 6156 -&gt; many values missing divat_dq1 : 541 -&gt;
+replace by random ? divat_dq2 : 543 -&gt; replace by random ? divat_cw1
+: 5138 -&gt; many values missing divat_cw2 : 5139 -&gt; many values
+missing divat_dp1 : 5414 -&gt; many values missing divat_dp2 : 5414
+-&gt; many values missing</p>
 <pre class="r"><code>summary(hla_definition)</code></pre>
-<pre><code>##     id_ind             divat_a1         divat_a2        divat_b1    
-##  Length:8791        Min.   : 1.000   Min.   : 0.00   Min.   : 0.00  
-##  Class :character   1st Qu.: 2.000   1st Qu.: 3.00   1st Qu.: 8.00  
-##  Mode  :character   Median : 2.000   Median :24.00   Median :18.00  
-##                     Mean   : 6.942   Mean   :20.08   Mean   :26.42  
-##                     3rd Qu.: 3.000   3rd Qu.:30.00   3rd Qu.:44.00  
-##                     Max.   :92.000   Max.   :92.00   Max.   :77.00  
-##                     NA&#39;s   :2317     NA&#39;s   :2317    NA&#39;s   :2318   
+<pre><code>##      id_ind             divat_a1         divat_a2        divat_b1    
+##  Min.   :5.449e+03   Min.   : 1.000   Min.   : 0.00   Min.   : 0.00  
+##  1st Qu.:6.731e+04   1st Qu.: 2.000   1st Qu.: 3.00   1st Qu.: 8.00  
+##  Median :1.001e+09   Median : 2.000   Median :24.00   Median :18.00  
+##  Mean   :5.097e+08   Mean   : 6.942   Mean   :20.08   Mean   :26.42  
+##  3rd Qu.:1.001e+09   3rd Qu.: 3.000   3rd Qu.:30.00   3rd Qu.:44.00  
+##  Max.   :1.001e+09   Max.   :92.000   Max.   :92.00   Max.   :77.00  
+##  NA&#39;s   :2414        NA&#39;s   :2317     NA&#39;s   :2317    NA&#39;s   :2318   
 ##     divat_b2       divat_dr1         divat_dr2        divat_dqa1   
 ##  Min.   : 0.00   Min.   :  0.000   Min.   :  0.00   Min.   :1.000  
 ##  1st Qu.:35.00   1st Qu.:  3.000   1st Qu.:  4.00   1st Qu.:1.000  

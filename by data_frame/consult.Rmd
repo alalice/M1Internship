@@ -10,7 +10,7 @@ suppressWarnings(library(Hmisc))
 suppressWarnings(library(readxl))
 suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
-coltype <- c("text",rep("text",32))
+coltype <- c("text","numeric","numeric",rep("text",30))
 consult <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "consult",na = "NA",col_types = coltype)
 ```
 
@@ -19,6 +19,53 @@ consult_N_test <- as.numeric(consult$id_g)
 consult_N <- consult[consult$id_g == consult_N_test,]
 consult_N <- consult_N[complete.cases(consult_N$id_g),]
 ```
+Replace the NA from witch we can deduce the value (ask for weight)
+```{r}
+consult_N$day_consult[is.na(consult_N$day_consult)] <- round(consult_N$month_consult[is.na(consult_N$day_consult)]*30.4167,digits = 0)
+consult_N$cni_consult[is.na(consult_N$cni_consult)] <- "Non"
+consult_N$cni_dose_consult[is.na(consult_N$cni_dose_consult)] <- 0
+consult_N$antiprolif_consult[is.na(consult_N$antiprolif_consult)] <- 0
+consult_N$mmf_consult[is.na(consult_N$mmf_consult)] <- 0
+consult_N$mmf_dose_consult[is.na(consult_N$mmf_dose_consult)] <- 0
+consult_N$mpa_consult[is.na(consult_N$mpa_consult)] <- 0
+consult_N$mpa_dose_consult[is.na(consult_N$mpa_dose_consult)] <- 0
+consult_N$aza_consult[is.na(consult_N$aza_consult)] <- 0
+consult_N$aza_dose_consult[is.na(consult_N$aza_dose_consult)] <- 0
+consult_N$mTor_consult[is.na(consult_N$mTor_consult)] <- 0
+consult_N$rapa_consult[is.na(consult_N$rapa_consult)] <- 0
+consult_N$rapa_dose_consult[is.na(consult_N$rapa_dose_consult)] <- 0
+consult_N$evero_dose_consult[is.na(consult_N$evero_dose_consult)] <- 0
+consult_N$evero_consult[is.na(consult_N$evero_consult)] <- 0
+consult_N$cs_consult[is.na(consult_N$cs_consult)] <- 0
+consult_N$cs_dose_consult[is.na(consult_N$cs_dose_consult)] <- 0
+```
+
+attempts to solve the weight problem (replace by the mean of weight) and add the number of consult by id_g
+```{r}
+nombre_consultations <- table(consult_N$id_g)
+consult_N_improved <- consult_N
+consult_N_improved$nb_consults <- nombre_consultations[consult_N_improved$id_g]
+
+
+consult_N_improved$weight_consult <- sapply(consult_N_improved$weight_consult,as.numeric)
+
+avrg_weight_r <- round(tapply(X = consult_N_improved$weight_consult[is.na(consult_N_improved$weight_consult)==FALSE], INDEX = consult_N_improved$id_g[is.na(consult_N_improved$weight_consult)==FALSE], FUN = mean, na.rm = TRUE),2)
+for (i in unique(consult_N_improved$id_g)) {
+  consult_N_improved$weight_consult[consult_N_improved$id_g == i] <- ifelse(is.na(consult_N_improved$weight_consult[consult_N_improved$id_g == i]), avrg_weight_r[i], consult_N_improved$weight_consult[consult_N_improved$id_g == i])
+}
+```
+Put the size when we already have it
+```{r}
+cons_w_noNA <- consult_N_improved[!is.na(consult_N_improved$height_consult),c(1,7)]
+cons_w_noNA<-unique(cons_w_noNA)
+
+for (i in unique(cons_w_noNA$id_g)) {
+  consult_N_improved$height_consult[consult_N_improved$id_g == i & is.na(consult_N_improved$height_consult)] <- cons_w_noNA$height_consult[cons_w_noNA$id_g == i]
+}
+
+```
+
+
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(consult_N$id_g)
@@ -29,9 +76,7 @@ for (col in names(consult_N)) {
 }
 ```
 
-```{r}
-write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "consult", append = TRUE)
-```
+
 Missing (NA) : - day_consult : 703/32350
                - weight_consult : 2556 -> may be already enter in the base (check id_g equals)
                - height_consult : 179 ""
@@ -63,8 +108,16 @@ Missing (NA) : - day_consult : 703/32350
                - cs_dose_consult : 22236 -> ==0 + random -> -2
                
                
-               
+Save the data frame with the NA indormations               
+```{r}
+write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "consult2", append = TRUE)
+```
 
+Less heavy method to save the new table constructed with the consults of Nantes
+```{r}
+addWorksheet(OUT, "consult_r_modif")
+writeData(OUT, sheet = "consult_r_modif", x = consult_N_improved,keepNA = TRUE)
+```
 
 ```{r}
 describe(consult_N)

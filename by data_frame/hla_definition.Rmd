@@ -59,6 +59,10 @@ divat_cw2 : 5139 -> many values missing
 divat_dp1 : 5414 -> many values missing 
 divat_dp2 : 5414 -> many values missing 
 
+```{r}
+addWorksheet(OUT, "hla_def")
+writeData(OUT, sheet = "hla_def", x = hla_def_Nantes,keepNA = TRUE)
+```
 
 ```{r}
 summary(hla_definition)
