@@ -1,0 +1,201 @@
+---
+title: "Merge recipients DIVAT Nantes"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+coltype <- c("numeric","text","guess","guess","date")
+suppressWarnings(recipient <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "recipient",na = "NA",col_types = coltype))
+coltype <- c("text","guess","text","guess")
+individual <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "individual",na = "NA",col_types = coltype)
+```
+
+```{r}
+recipient_Nantes <- recipient[complete.cases(recipient$id_r),]
+```
+
+```{r}
+individual_N <- individual[complete.cases(individual$id_ind),]
+```
+
+merge individual and recipients
+
+```{r}
+merge1 <- merge.data.frame(individual_N,recipient_Nantes,by.x = "id_ind", by.y = "id_r")
+```
+
+only once in the database
+
+```{r}
+merge2 <- unique(merge1)
+```
+
+add the grafts associated of the recipient
+
+```{r}
+coltypes <- c("text","text","text","text","guess","guess","text","text","guess","guess","guess","guess","guess","text","guess","text","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text")
+graft_base <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "graft_base",na = "NA",col_types = coltypes)
+graft_b_N_test <- as.numeric(graft_base$id_g)
+graft_b_N <- graft_base[graft_base$id_g == graft_b_N_test,]
+graft_b_N <- graft_b_N[complete.cases(graft_b_N$id_g),]
+
+
+merge3 <- merge.data.frame(merge2,graft_b_N, by.x = "id_ind",by.y = "id_r",all.x = TRUE)
+merge3 <- unique(merge3)
+```
+
+add the antecedents of the recipient
+
+```{r}
+suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "antecedent_r",na = "NA",col_types = "numeric"))
+antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
+
+
+merge4 <- merge.data.frame(merge3,antecedent_r, by.x = "id_g",by.y = "id_g",all.x = TRUE)
+merge4 <- unique(merge4)
+```
+
+add the recipient hla definition 
+
+```{r}
+coltype <- c("numeric",rep("guess",56))
+suppressWarnings(hla_definition <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "hla_definition",na = "NA",col_types = coltype))
+
+hla_def_Nantes <- hla_definition[complete.cases(hla_definition$id_ind),]
+```
+
+```{r}
+merge5 <- merge.data.frame(merge4,hla_def_Nantes[,-(16:57)], by.x = "id_ind",by.y = "id_ind",all.x = TRUE)
+
+merge5 <- unique(merge5)
+```
+
+add the other grafts of the recipient
+
+```{r}
+coltype <- c("text","text","guess","guess","guess","text")
+other_grafts <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "other_grafts",na = "NA",col_types = coltype)
+```
+
+```{r}
+merge6 <- merge.data.frame(merge4,other_grafts, by.x = "id_ind",by.y = "id_ind_r",all.x=TRUE)
+merge6 <- unique(merge6)
+```
+
+remove to empty columns (type_ind, center, num_info_other_r, death_r, date_death_r, precision_disease)
+
+```{r}
+merge6_clean <- merge6[,-c(3,6,7,8,9,14,23,69)]
+```
+ 
+
+score for missing datas
+```{r}
+merge6_clean$Nb_NA <- rowSums(is.na(merge6_clean))+ 4*(is.na(merge6_clean$abo_ind))+ 4*(is.na(merge6_clean$height_r))+ 4* (is.na(merge6_clean$weight_r))
+```
+remove the recipient with to much missing datas
+```{r}
+merge6_clean <- merge6_clean[merge6_clean$Nb_NA < 20,]
+```
+
+test
+```{r}
+merge6_clean[merge6_clean$Nb_NA> 15,]
+```
+change NA to correct datas
+```{r}
+merge6_clean$atcdt_pregnancy_g[is.na(merge6_clean$atcdt_pregnancy_g)] <- 0
+#merge6_clean$[is.na(merge6_clean$)] <- 0
+```
+
+save to file
+```{r}
+write.xlsx(merge6_clean, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\merge_recipient_before_graft.xlsx",sheetName = "clean_up", append = FALSE)
+```
+
+```{r}
+merge6_clean_n <- data.frame(sapply(merge6_clean[,10:68],as.numeric))
+```
+```{r}
+merge6_clean_ql <- data.frame(sapply(merge6_clean[,c(3,4,9:11,16,19,20,26:33,35:62,65:67)],as.character))
+```
+
+```{r}
+mca_r <- MCA(merge6_clean_ql)
+```
+```{r}
+fviz_eig(mca_r)
+```
+```{r}
+summary(mca_r)
+```
+
+
+
+```{r}
+merge6_clean_nor <- scale(merge6_clean_n)
+```
+
+```{r fig.height=5, fig.width=12}
+#merge6_clean<- data.frame(sapply(merge6_clean[,10:68],as.numeric))
+correlation_matrix <- cor(merge6_clean_nor[,-c(56,57,59)],use = "pairwise.complete.obs")
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10))
+```
+
+```{r}
+pca_r <- PCA(merge6_clean_nor[,-c(56,57,59)])
+```
+```{r}
+summary(pca_r)
+```
+
+```{r}
+pca_r$var
+```
+
+```{r}
+summary(pca_r)
+```
+```{r}
+fviz_screeplot(pca_r)
+```
+
+
+```{r}
+# Plot of variables
+fviz_famd_var(pca_r, repel = TRUE)
+# Contribution to the first dimension
+fviz_contrib(pca_r, "var", axes = 1)
+# Contribution to the second dimension
+fviz_contrib(pca_r, "var", axes = 2)
+```
+
+```{r}
+fviz_eig(pca_r)
+```
+```{r}
+fviz_pca_ind(pca_r)
+fviz_pca_var(pca_r)
+#fviz_pca_contrib()
+fviz_pca_biplot(pca_r)
+```
+```{r}
+fviz_pca(pca_r)
+```
+
+
+```{r}
+famd_r <- FAMD(merge6_clean[,-c(1,2,5,6)])
+```
+
+

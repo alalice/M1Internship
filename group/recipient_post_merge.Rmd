@@ -1,0 +1,75 @@
+---
+title: "Merge recipients post greffe DIVAT Nantes"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+coltype <- c("numeric","text","guess","guess","date")
+suppressWarnings(recipient <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "recipient",na = "NA",col_types = coltype))
+coltype <- c("text","guess","text","guess")
+individual <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "individual",na = "NA",col_types = coltype)
+
+
+recipient_Nantes <- recipient[complete.cases(recipient$id_r),]
+
+individual_N <- individual[complete.cases(individual$id_ind),]
+```
+
+```{r}
+merge1 <- merge.data.frame(individual_N,recipient_Nantes,by.x = "id_ind", by.y = "id_r")
+```
+
+Remplacez les NA par les valeurs existantes dans chaque groupe
+
+```{r}
+valeurs_existantes <- unique(merge1$abo_ind)
+
+# Remplacez les NA par les valeurs existantes dans chaque groupe
+for (val in valeurs_existantes) {
+  merge1$abo_ind <- ifelse(is.na(merge1$abo_ind) & merge1$id_ind %in% merge1[merge1$abo_ind == val, "id_ind"], val, merge1$abo_ind)
+}
+```
+
+```{r}
+merge1 <- unique(merge1)
+```
+
+
+```{r}
+coltypes <- c("text","text","text","text","guess","guess","text","text","guess","guess","guess","guess","guess","text","guess","text","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text")
+graft_base <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "graft_base",na = "NA",col_types = coltypes)
+graft_b_N_test <- as.numeric(graft_base$id_g)
+graft_b_N <- graft_base[graft_base$id_g == graft_b_N_test,]
+graft_b_N <- graft_b_N[complete.cases(graft_b_N$id_g),]
+
+
+merge2 <- merge.data.frame(merge1,graft_b_N, by.x = "id_ind",by.y = "id_r",all.x = TRUE,all.y = TRUE)
+merge2 <- unique(merge2)
+```
+
+```{r}
+rejection <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "rejection",na = "NA",col_types = "text")
+```
+
+```{r}
+merge3 <- merge.data.frame(merge2,rejection,by.x = "id_g",by.y = "id_g",all.y = TRUE,all.x = TRUE)
+```
+
+
+Remplacez les NA par les valeurs existantes dans chaque groupe
+
+```{r}
+valeurs_existantes <- unique(merge3$abo_ind)
+
+# Remplacez les NA par les valeurs existantes dans chaque groupe
+for (val in valeurs_existantes) {
+  merge3$abo_ind <- ifelse(is.na(merge3$abo_ind) & merge3$id_ind %in% merge3[merge3$abo_ind == val, "id_ind"], val, merge3$abo_ind)
+}
+```
+
+
+
