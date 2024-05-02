@@ -1,0 +1,197 @@
+
+---
+title: "Merge recipients DIVAT_clean Nantes"
+author: "alice"
+date: "2024-04-16"
+output: html_document
+---
+
+## Creation of the table gathering recipient's data at graft time 
+
+```{r}
+suppressWarnings(library(Hmisc))
+suppressWarnings(library(readxl))
+
+coltype <- c("text","guess","text","guess")
+individual <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "individual",na = "NA",col_types = coltype)
+coltypes <- c("text","text","text","text","guess","guess","text","text","guess","guess","guess","guess","guess","text","guess","text","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text")
+graft_base <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "graft_base",na = "NA",col_types = coltypes)
+```
+
+
+
+merge recipient's individual and grafts
+
+```{r}
+individual_r <- individual[individual$type_ind == "R",]
+merge1 <- merge.data.frame(individual_r,graft_base,by.x = "id_ind", by.y = "id_r",all.y = TRUE)
+merge2 <- unique(merge1)
+```
+
+
+
+
+add the antecedents of the recipient
+
+```{r}
+suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "antecedent_r",na = "NA",col_types = "numeric"))
+#antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
+
+
+merge3 <- merge.data.frame(merge2,antecedent_r, by.x = "id_g",by.y = "id_g",all.x = TRUE)
+merge4 <- unique(merge3)
+```
+
+add the other grafts of the recipient
+```{r}
+coltype <- c("text","text","guess","guess","guess","text")
+other_grafts <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "other_grafts",na = "NA",col_types = coltype)
+```
+
+```{r}
+merge5 <- merge.data.frame(merge4,other_grafts, by.x = "id_ind",by.y = "id_ind_r",all.x=TRUE)
+merge6 <- unique(merge5)
+```
+
+
+remove to empty columns (type_ind, center, num_info_other_r, death_r, date_death_r, precision_disease)
+
+```{r}
+merge6_clean <- merge6[,-c(3,6,7,10)]
+```
+ 
+
+score for missing datas ()
+```{r}
+merge6_clean$Nb_NA <- rowSums(is.na(merge6_clean[,1:27]))#)+ 4*(is.na(merge6_clean$abo_ind))+ 4*(is.na(merge6_clean$height_r))+ 4* (is.na(merge6_clean$weight_r))
+```
+
+test
+```{r}
+merge6_clean[merge6_clean$Nb_NA> 15,]
+```
+
+
+remove the recipient with to much missing datas (3 individuals 1 graft each)
+```{r}
+merge6_clean <- merge6_clean[merge6_clean$Nb_NA < 16,]
+```
+
+
+Create a new worksheet and save this merge into it.
+```{r}
+OUT <- createWorkbook()
+addWorksheet(OUT,"recipient_before")
+writeData(OUT,"recipient_before",merge6_clean,keepNA = TRUE)
+openxlsx::saveWorkbook(OUT,"C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\MERGING_part_1.xlsx")
+```
+
+
+## Work on the datas
+
+```{r}
+library(corrplot)
+library(gplots)
+library(FactoMineR)
+library(factoextra)
+```
+
+
+gather only numerical datas
+```{r}
+merge6_clean_n <- data.frame(sapply(merge6_clean[,-c(1,2,4,7,65,66,67)],as.numeric))
+```
+
+
+```{r}
+merge6_clean_nor <- scale(merge6_clean_n)
+```
+
+```{r}
+merge6_clean_n$num_og[is.na(merge6_clean_n$num_og)]<-0
+```
+
+
+```{r fig.height=5, fig.width=12}
+correlation_matrix <- cor(merge6_clean_nor[,-c(56,57,59)],use = "pairwise.complete.obs")
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10))
+```
+
+## PCA over the merge
+
+```{r}
+pca_r<- PCA(merge6_clean_nor[,c(1,4:59)])
+```
+
+```{r}
+pca_r_brut <- PCA(merge6_clean_n[,c(1:59)])
+```
+```{r}
+fviz_pca_var(pca_r_brut, col.var = "contrib", gradient.cols = c("white", "#0b53c1", "#ff0055"),ggtheme = theme_minimal())
+```
+
+```{r}
+fviz_pca_ind(pca_r_brut, label="none", habillage=32, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","goldenrod","pink","green","red"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
+58 : num other graft
+```{r}
+fviz_pca_ind(pca_r_brut, label="none", habillage=58, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","goldenrod","pink","green","red"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
+
+dates
+```{r message=FALSE, warning=FALSE}
+
+fviz_pca_ind(pca_r_brut, label="none", habillage=3, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","skyblue4","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","goldenrod","red","red","red","red","red","red","red","red","red","red","green","green","green","green","green","green","green","green","green","green","pink","pink","pink","pink","pink","pink","pink","pink","pink","pink"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
+
+
+```{r}
+fviz_eig(pca_r_brut, barfill= 'aquamarine4',barcolor = 'aquamarine4',geom="bar",width=0.8,addlabels=T)+ 
+  theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) +
+  labs(title = "TITLE", subtitle = "Subtitle")
+```
+
+
+```{r}
+fviz_contrib(pca_r_brut, "var", axes = 1)
+fviz_contrib(pca_r_brut, "var", axes = 2)
+fviz_contrib(pca_r_brut, "var", axes = 3)
+```
+
+
+## WPCA over the merge test
+
+
+determine row weights
+```{r}
+merge6_clean_w <- merge6_clean
+merge6_clean_w$nb_row <- ave(rep(1, nrow(merge6_clean_w)), merge6_clean_w$id_g, FUN = length)
+
+merge6_clean_w_n <- data.frame(sapply(merge6_clean_w[,-c(1,2,4,7,65,66,67)],as.numeric))
+```
+
+
+apply the weight in the PCA 
+```{r}
+PCA(merge6_clean_w_n[,c(1:59)],row.w = 1/merge6_clean_w_n$nb_row)
+```
+```{r}
+res.impute <- imputeFAMD(merge6_clean)
+```
+
+```{r}
+res.afdm <- FAMD(merge6_,tab.disj=res.impute$tab.disj) 
+```
+

@@ -1,0 +1,238 @@
+---
+title: "Merge all recipient"
+author: "alice"
+date: "2024-04-29"
+output: html_document
+---
+
+Dont forget to run the merge_new_flie.Rdm to be able to run this file (needeed for the merge 6)
+Or add a ligne to get the save file from the end of the last file.
+
+"C:\Alice\1-Universitée\Stages\M1-centrale\DATAS\NewDATA\MERGING_part_1.xlsx"
+
+```{r}
+library(readxl)
+merge6_clean <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\MERGING_part_1.xlsx",na = "NA")
+```
+
+
+## Merging
+
+Merge with the biopsy
+```{r}
+biopsy <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "biopsy",na = "NA")
+```
+
+
+```{r}
+merge7 <- merge.data.frame(merge6_clean,biopsy,by.x = "id_g",by.y = "id_g",all.y = TRUE,all.x = TRUE)
+merge7 <- unique(merge7)
+```
+
+Merge with the consults 
+```{r warning=FALSE}
+consults <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "consult_r",na = "NA", col_types = c(rep("guess",27),"numeric",rep("guess",5)))
+```
+
+```{r}
+merge8 <- merge.data.frame(merge7,consults,by.x = "id_g",by.y = "id_g",all.y = TRUE,all.x = TRUE)
+merge8 <- unique(merge8)
+```
+
+Merge with rejection
+```{r warning=TRUE}
+rejection <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "rejection",na = "NA")
+```
+
+```{r}
+merge9 <- merge.data.frame(merge8,rejection,by.x = "id_g",by.y = "id_g",all.x = TRUE)
+merge9 <- unique(merge9) 
+```
+
+Merge with immun_compatibility
+```{r warning=TRUE}
+immun_compatibility <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "immune_compatibility",na = "NA")
+```
+
+```{r}
+merge10 <- merge.data.frame(merge9,immun_compatibility,by.x = "id_g",by.y = "id_g",all.x = TRUE)
+merge10 <- unique(merge10) 
+```
+
+Save the file containing all the datas conecrning the recipient
+```{r}
+OUT <- createWorkbook()
+addWorksheet(OUT,"recipient")
+writeData(OUT,"recipient",merge10,keepNA = TRUE)
+openxlsx::saveWorkbook(OUT,"C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\MERGING_2.xlsx")
+```
+## analysis
+
+## PCA
+
+```{r}
+numeric_m10 <- data.frame(sapply(merge10[,-c(1,2,4,7,64,65,66,67,71,75,78,94,104,106,110,117,131,156)],as.numeric))
+```
+```{r}
+library(corrplot)
+library(gplots)
+library(FactoMineR)
+library(factoextra)
+correlation_matrix <- cor(numeric_m10,use = "pairwise.complete.obs")
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10),
+          trace = "none")
+```
+
+
+
+```{r}
+pca_ttr<- PCA(numeric_m10)
+```
+```{r}
+fviz_pca_var(pca_ttr, col.var = "contrib", gradient.cols = c("white", "#0b53c1", "#ff0055"),ggtheme = theme_minimal())
+```
+```{r}
+fviz_pca_ind(pca_ttr, label="none", habillage=158, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","goldenrod","pink","green","red"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
+
+
+```{r}
+fviz_eig(pca_ttr, barfill= 'aquamarine4',barcolor = 'aquamarine4',geom="bar",width=0.8,addlabels=T)+ 
+  theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) +
+  labs(title = "TITLE", subtitle = "Subtitle")
+```
+
+```{r}
+fviz_contrib(pca_ttr, "var", axes = 1)
+fviz_contrib(pca_ttr, "var", axes = 2)
+fviz_contrib(pca_ttr, "var", axes = 3)
+```
+
+
+```{r}
+meerge10 <- merge10
+meerge10$nb_row <- ave(rep(1, nrow(meerge10)), meerge10$id_g, FUN = length)
+numeric_m10 <- data.frame(sapply(meerge10[,-c(1,2,4,7,64,65,66,67,71,75,78,99,94,104,106,110,117,131,156,167,168)],as.numeric))
+```
+```{r}
+Wpca <- PCA(numeric_m10,row.w = 1/numeric_m10$nb_row)
+```
+
+```{r}
+fviz_pca_var(Wpca, col.var = "contrib", gradient.cols = c("white", "#0b53c1", "#ff0055"),ggtheme = theme_minimal())
+```
+
+
+```{r}
+fviz_eig(Wpca, barfill= 'aquamarine4',barcolor = 'aquamarine4',geom="bar",width=0.8,addlabels=T)+ 
+  theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) +
+  labs(title = "TITLE", subtitle = "Subtitle")
+```
+
+```{r}
+fviz_contrib(Wpca, "var", axes = 1)
+fviz_contrib(Wpca, "var", axes = 2)
+fviz_contrib(Wpca, "var", axes = 3)
+```
+## WPCA
+correlation plot for all the datas marges of the recipient 
+```{r fig.width=15}
+pdf("my_plot.pdf")
+correlation_matrix <- cor(numeric_m10,use = "pairwise.complete.obs")
+corrplot(correlation_matrix,method = "color", type = "upper")
+heatmap.2(correlation_matrix,
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("red", "white", "blue"))(100),
+          scale = "none",
+          margins = c(10,10),
+          trace  = "none")
+dev.off()
+```
+look uppon small part of the corrplot
+```{r}
+corrplot(correlation_matrix[59:80,59:80],method = "color", type = "upper")
+heatmap.2(correlation_matrix[59:80,59:80],
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("blue", "white", "red"))(100),
+          scale = "none",
+          margins = c(10,10),
+          trace  = "none")
+```
+
+##FAMD
+
+```{r}
+library(FactoMineR)
+library(factoextra)
+require(missMDA)
+```
+
+
+```{r}
+merge10$sexe_ind <- as.factor(merge10$sexe_ind)
+merge10$date_g <- as.Date(merge10$date_g)
+merge10$year_g <- as.numeric(merge10$year_g)
+merge10$type_g <- as.factor(merge10$type_g)
+merge10$rank_g <- as.factor(merge10$rank_g)
+merge10$code_link_rec_don_g <- as.factor(merge10$code_link_rec_don_g)
+merge10$age_predon_r <- as.numeric(merge10$age_predon_r)
+```
+
+Complete datas and run the FAMD 
+```{r}
+res.impute <- imputeFAMD(merge10[,c(3:10)], ncp=2)
+#row.names(res.impute$tab.disj) <- 1:52710
+#completObs$sexe_ind <- as.factor(completObs$sexe_ind)
+#completObs$rank_g <- as.factor(completObs$rank_g)
+res.afdm <- FAMD(merge10[,c(3:10)],tab.disj = res.impute$tab.disj,graph = TRUE)
+```
+
+```{r}
+fviz_famd_var(res.afdm)
+```
+```{r}
+fviz_screeplot(res.afdm)
+```
+
+```{r}
+fviz_contrib(res.afdm, "var", axes = 1)
+fviz_contrib(res.afdm, "var", axes = 2)
+fviz_contrib(res.afdm, "var", axes = 3)
+```
+```{r}
+fviz_pca_ind(res.afdm, label="none", habillage=3, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","goldenrod","pink","green","red","yellow"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
+
+```{r}
+res.impute <- imputeFAMD(merge10[,c(3,4,7,10)], ncp=2)
+#row.names(res.impute$tab.disj) <- 1:52710
+#completObs$sexe_ind <- as.factor(completObs$sexe_ind)
+#completObs$rank_g <- as.factor(completObs$rank_g)
+res.afdm <- FAMD(merge10[,c(3,4,7,10)],tab.disj = res.impute$tab.disj,graph = TRUE)
+```
+
+```{r}
+merge10_npk <- merge10
+merge10_npk[is.na(merge10_npk)] <- 0
+```
+
+```{r}
+bigFAMD <- FAMD(merge10_npk)
+```
+```{r}
+merge6_npk <- merge6_clean
+merge6_npk[is.na(merge6_npk)] <- 0
+```
+

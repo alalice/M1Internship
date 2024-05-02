@@ -1,0 +1,87 @@
+---
+title: "Merge all recipient"
+author: "alice"
+date: "2024-04-29"
+output: html_document
+---
+
+Dont forget to run the recipient_tt_merge.Rdm to be able to run this file (needeed for the merge 6)
+Or add a ligne to get the save file from the end of the last file.
+
+## Merging
+
+import tables :
+donor
+```{r}
+donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "donor",na = "NA")
+```
+living donor
+```{r}
+living_donor_followup <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "living_donor_followup",na = "NA")
+```
+living donor complications
+```{r}
+living_donor_complications <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\KiTGENIE_CLEAN2.xlsx", sheet = "living_donor_complications",na = "NA")
+```
+
+Merge them with the rest
+```{r}
+merge11 <- merge.data.frame(merge10,donor,by.x = "id_g",by.y = "id_g",all.x = TRUE,all.y = TRUE)
+merge11 <- unique(merge11)
+```
+
+```{r}
+merge12 <- merge.data.frame(merge11,living_donor_complications,by.x = "id_ind_d",by.y = "id_ind_ld",all.x = TRUE,all.y = TRUE)
+merge12 <- unique(merge12)
+```
+
+```{r}
+merge13 <- merge.data.frame(merge12,living_donor_followup,by.x = "id_ind_d",by.y = "id_ind_ld",all.x = TRUE,all.y = TRUE)
+merge13 <- unique(merge13)
+```
+
+merge 13 is of size 120624 * 316 (maybe a bit too much)
+
+
+## Analysis 
+
+```{r}
+numeric_m13 <- data.frame(sapply(merge13[,-c(1,2,4,7,64,65,66,67,71,75,78,94,104,106,110,117,131,156)],as.numeric))
+numeric_m13<- numeric_m13[, colSums(is.na(numeric_m13)) != nrow(numeric_m13)]
+```
+
+
+## WPCA
+correlation plot for all the datas marges of the recipient 
+```{r fig.width=15}
+pdf("my_plot2.pdf")
+correlation_matrix <- cor(numeric_m13,use = "pairwise.complete.obs")
+corrplot(correlation_matrix[-c(229:257),-c(229:257)],method = "color", type = "upper")
+heatmap.2(correlation_matrix[-c(229:257),-c(229:257)],
+          Rowv = FALSE, Colv = FALSE,
+          dendrogram = "none",
+          col = colorRampPalette(c("red", "white", "blue"))(100),
+          scale = "none",
+          margins = c(10,10),
+          trace  = "none")
+dev.off()
+```
+
+```{r}
+meerge13 <- merge13
+meerge13$nb_row <- ave(rep(1, nrow(meerge13)), meerge13$id_g, FUN = length)
+numeric_m13 <- data.frame(sapply(meerge13[,-c(1,2,4,7,64,65,66,67,71,75,78,99,94,104,106,110,117,131,156,167,168)],as.numeric))
+numeric_m13<- numeric_m13[, colSums(is.na(numeric_m13)) != nrow(numeric_m13)]
+```
+```{r}
+Wpca <- PCA(numeric_m13,row.w = 1/numeric_m13$nb_row)
+```
+```{r}
+fviz_pca_var(Wpca, col.var = "contrib", gradient.cols = c("white", "#0b53c1", "#ff0055"),ggtheme = theme_minimal())
+```
+
+```{r}
+fviz_pca_ind(Wpca, label="none", habillage= 145, addEllipses=TRUE, ellipse.level=95, palette = c("skyblue4","goldenrod","pink","green","red"))+
+theme(plot.title = element_text(face = "bold", size = 12, hjust=0.5),plot.subtitle = element_text(size = 9, hjust=0.5)) + 
+  labs(title = "Individuals projection of PCA with 59 quantitative variables", subtitle = "ACP without na.omit = ??? ")
+```
