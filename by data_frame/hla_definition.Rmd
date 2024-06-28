@@ -18,6 +18,10 @@ R_PRG390 : efs_a2 = - (removed in the data frame, is it a NA ?)
 hla_def_Nantes <- hla_definition[complete.cases(hla_definition$id_ind),]
 ```
 
+```{r}
+hla_def_Nantes <- hla_def_Nantes[,-c(16:57)]
+hla_def_Nantes <- hla_def_Nantes[,-c(8,9,12:15)]
+```
 
 ```{r}
 describe(hla_def_Nantes)
@@ -28,8 +32,8 @@ dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(hla_def_Nantes$id_ind)
 for (col in names(hla_def_Nantes)) {
   if(sum(is.na(hla_def_Nantes[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(hla_def_Nantes[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(hla_def_Nantes[[col]])),sum(is.na(hla_def_Nantes[[col]]))/lenght,"random")}
+    cat(col ,":" , sum(is.na(hla_def_Nantes[[col]])/lenght),"\n")}
+    #dataframe[col] <- c(sum(is.na(hla_def_Nantes[[col]])),sum(is.na(hla_def_Nantes[[col]]))/lenght,"random")}
 }
 ```
 

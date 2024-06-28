@@ -11,7 +11,7 @@ suppressWarnings(library(Hmisc))
 suppressWarnings(library(readxl))
 suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
-coltypes <- c("text","text","text","text","guess","guess","text","text","guess","guess","guess","guess","guess","text","guess","text","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","guess","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text")
+coltypes <- c("text","text","text","text","guess","guess","guess","text","text","guess","guess","guess","guess","text","text","text","text","guess","guess","guess","guess","guess","guess","guess","text","guess","guess","guess","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text","text")
 graft_base <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "graft_base",na = "NA",col_types = coltypes)
 ```
 
@@ -22,16 +22,19 @@ graft_b_N <- graft_b_N[complete.cases(graft_b_N$id_g),]
 ```
 Remove precisions disease
 ```{r}
-graft_b_N <- graft_b_N[,-16]
+graft_b_N <- graft_b_N[,-c(16,24,25)]
 ```
 
 Replace NA and add column traitement_ind
 ```{r}
+library(dplyr)
 graft_b_N$rank_g[is.na(graft_b_N$rank_g)]<-1
 graft_b_N$traitement_ind <- ifelse(is.na(graft_b_N$day_ttt_ind),0,1)
 graft_b_N<- graft_b_N %>% relocate(traitement_ind, .after = code_ttt_ind)
 graft_b_N$day_ttt_ind[is.na(graft_b_N$day_ttt_ind)]<-0
 graft_b_N$mach_perf[is.na(graft_b_N$mach_perf)]<-0
+graft_b_N<- graft_b_N[graft_b_N$type_g != "P",]
+table(graft_b_N$type_g)
 ```
 
 
@@ -40,13 +43,18 @@ describe(graft_b_N)
 ```
 
 ```{r}
-dataframe <- data.frame(row.names = c("missing","part","coments") )
+#dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(graft_b_N$id_g)
+#missing2 <- missing
+#sum <- 0
 for (col in names(graft_b_N)) {
   if(sum(is.na(graft_b_N[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(donor_N[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(graft_b_N[[col]])),sum(is.na(graft_b_N[[col]]))/lenght,"random")}
+    #sum <- sum + sum(is.na(graft_b_N[[col]]))
+    cat(col ,":" , sum(is.na(graft_b_N[[col]]))/lenght,"\n")}
+    #missing2 <- c(missing2,sum(is.na(graft_b_N[[col]]))/lenght)}
+    #dataframe[col] <- c(sum(is.na(graft_b_N[[col]])),sum(is.na(graft_b_N[[col]]))/lenght,"random")}
 }
+print(sum)
 ```
 
 ```{r}
@@ -80,7 +88,12 @@ prophyl_pnc_g : 41 -> random
 prophyl_cmv_g : 36 -> random
 
 
+
+
 ```{r}
+library(openxlsx)
+OUT <- loadWorkbook("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\CLEAN_MERGE_new.xlsx")
+removeWorksheet(OUT,"graft_base")
 addWorksheet(OUT, "graft_base")
 writeData(OUT, sheet = "graft_base", x = graft_b_N,keepNA = TRUE)
 ```

@@ -15,11 +15,16 @@ other_grafts <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATA
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(other_grafts$id_ind_r)
+m2 <- mi3
+sum <- 0
 for (col in names(other_grafts)) {
   if(sum(is.na(other_grafts[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(other_grafts[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(other_grafts[[col]])),sum(is.na(other_grafts[[col]]))/lenght,"random")}
+    sum <- sum + sum(is.na(other_grafts[[col]]))
+    cat(col ,":" , sum(is.na(other_grafts[[col]]))/lenght,"\n")
+    m2 <- c(m2,sum(is.na(other_grafts[[col]]))/lenght)}
+    #dataframe[col] <- c(sum(is.na(other_grafts[[col]])),sum(is.na(other_grafts[[col]]))/lenght,"random")}
 }
+print(sum)
 ```
 
 Missing (NA) :

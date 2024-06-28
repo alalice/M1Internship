@@ -23,11 +23,16 @@ plot(rejection$year_reject,rejection$code_ttt_reject)
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(rejection$id_g)
+#m4 <- m2
+sum <- 0
 for (col in names(rejection)) {
   if(sum(is.na(rejection[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(rejection[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(rejection[[col]])),sum(is.na(rejection[[col]]))/lenght,"random")}
-}
+    sum <- sum + sum(is.na(rejection[[col]]))
+    cat(col ,":" , sum(is.na(rejection[[col]]))/lenght,"\n")
+    #m4 <- c(m4,sum(is.na(rejection[[col]]))/lenght)}
+    #dataframe[col] <- c(sum(is.na(rejection[[col]])),sum(is.na(rejection[[col]]))/lenght,"random")}
+}}
+print(sum)
 ```
 
 ```{r}

@@ -5,25 +5,82 @@ date: "2024-04-16"
 output: html_document
 ---
 
+m4 <- 0.0021558362 0.0009239298 0.1268863566 0.0711425932 0.0711425932 0.0711425932 0.0107791808 0.0255620573  0.0098552510 0.0076994148 0.2242069603 0.0092392978 0.0566676933 0.1967970434 0.3218355405 0.0194025254
+ 0.1986449030 0.1438250693 0.0147828765 0.0197105020 0.8882044965 0.1253464737 0.0295657530 0.2235910071
+0.2014166923 0.8272251309 0.7292885741 0.9263935941 1.0000000000 0.6378195257 0.9809054512 0.0228512075
+0.0316800831 0.0514152168 0.8467930408 0.0116852766 0.0353155025 0.0732277331 0.0662165671 0.0659568943
+0.0841339912 0.1947546092 0.8512074786 0.0830952999 0.0742664243 0.0742664243 0.1542456505 0.0685536224
+0.0890677746 0.1669696183 0.9916904700 0.0464814334 0.2085172682 0.0254479356 0.1594391067 0.1682679823
+0.2768112179 0.9374188522 0.2939496235 0.1659309270 0.3022591535 0.9935081797 0.2949883147 0.0446637237
+0.1633341989 0.5803687354 0.1596987795 0.1596987795 0.1596987795 0.9872760322 0.1596987795 0.1596987795
+0.1596987795 0.1596987795 0.1596987795 0.1596987795 0.9992209816 0.0003079766 0.2232830305 0.0790108192
+0.0035857805 0.0833384853 0.0079443586 0.0079443586 0.0079443586 0.2049149923 0.1191653787 0.1056259660
+0.6232766615 0.9884389490 0.9595672334 0.0059412133 0.0062539087 0.0071919950 0.0021888680 1.0000000000
+0.0312695435 0.1876172608 0.0378361476 0.0187617261 0.0031269543 0.6219512195 0.3227016886 0.0096935585
+0.0353345841 0.0106316448 0.0090681676 0.0231394622 0.0137585991 0.0575359600 0.0115697311 0.0100062539
+0.0018817626 0.0010515247 0.0389064143 0.2460567823 0.0409956076
+
+```{r}
+png("missing values hist.png")
+hist(m4,main = "historgam of missing values",xlab = "proportion of missing values",col = "plum")
+dev.off()
+pdf("missing values hist.pdf")
+hist(m4,main = "historgam of missing values",xlab = "proportion of missing values",col = "plum")
+dev.off()
+length(m4[m4>0.5 & m4<0.6])
+length(m4[m4>0.6 & m4 <0.7])
+length(m4[m4>0.7 & m4<0.8])
+length(m4[m4>0.8 & m4<0.9])
+length(m4[m4>0.9])
+length(m4[m4>0.3])
+
+png("missing values hist split.png")
+# Définir les limites pour la partie gauche que vous souhaitez colorier différemment
+left_limit <- 0.3
+
+# Calculer les histogrammes manuellement
+hist_data <- hist(m4, plot = FALSE, breaks = 10)
+
+# Tracer l'histogramme complet en arrière-plan sans remplir les barres
+plot(hist_data, main = "Histogram of missing values", xlab = "Proportion of missing values", col = NA, border = "black")
+
+# Colorier les barres
+for (i in 1:length(hist_data$counts)) {
+  rect(hist_data$breaks[i], 0, hist_data$breaks[i + 1], hist_data$counts[i], 
+       col = ifelse(hist_data$mids[i] <= left_limit, "paleturquoise2", "plum"), 
+       border = "black")
+}
+
+# Ajouter une légende pour les couleurs
+legend("topright", legend = c("to keep", "to remove"), fill = c("paleturquoise2", "plum"))
+dev.off()
+```
+
+
+
+
 ```{r}
 library(Hmisc)
 library(readxl)
 suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
-coltype <- c(rep("text",2),"guess",rep("text",4),rep("numeric",3),rep("text",11),rep("numeric",6),"numeric",rep("text",2))
+coltype <- c(rep("text",2),"guess",rep("text",4),rep("numeric",3),rep("text",11),rep("numeric",6),"numeric")
 suppressWarnings(donor <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "donor",na = "NA",col_types = coltype))
 ```
 
 ```{r}
-donor_N_test <- as.numeric(donor$id_g)
-donor_N <- donor[donor$id_g == donor_N_test,]
-donor_N <- donor_N[complete.cases(donor_N$id_g),]
+donor_N_test <- as.numeric(donor$id_ind_d)
+donor_N <- donor[donor$id_ind_d == donor_N_test,]
+donor_N <- donor_N[complete.cases(donor_N$id_ind_d),]
 ```
 Replace NA 
 ```{r}
 donor_N$drug_vaso_predon_d[is.na(donor_N$drug_vaso_predon_d)]<-0
 ```
 
+```{r}
+donor_N <- donor_N[,-c(24)]
+```
 
 
 ```{r}
@@ -33,11 +90,16 @@ describe(donor)
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(donor_N$id_ind_d)
+missing <- c()
+sum <- 0
 for (col in names(donor_N)) {
   if(sum(is.na(donor_N[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(donor_N[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(donor_N[[col]])),sum(is.na(donor_N[[col]]))/lenght,"random")}
+    sum <- sum + sum(is.na(donor_N[[col]]))
+    cat(col ,":" , sum(is.na(donor_N[[col]]))/lenght,"\n")
+    #dataframe[col] <- c(sum(is.na(donor_N[[col]])),sum(is.na(donor_N[[col]]))/lenght,"random")}
+    missing <- c(missing,sum(is.na(donor_N[[col]]))/lenght)}
 }
+print(sum)
 ```
 
 ```{r}

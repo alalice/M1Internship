@@ -21,16 +21,29 @@ recipient_Nantes <- recipient[complete.cases(recipient$id_r),]
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(recipient_Nantes$id_r)
+sum <- 0
 for (col in names(recipient_Nantes)) {
   if(sum(is.na(recipient_Nantes[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(recipient_Nantes[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(recipient_Nantes[[col]])),sum(is.na(recipient_Nantes[[col]]))/lenght,"random")}
+    sum <- sum + sum(is.na(recipient_Nantes[[col]]))
+    cat(col ,":" , sum(is.na(recipient_Nantes[[col]]))/lenght,"\n")}
+    #dataframe[col] <- c(sum(is.na(recipient_Nantes[[col]])),sum(is.na(recipient_Nantes[[col]]))/lenght,"random")}
 }
+print (sum)
 ```
+```{r}
+recipient_Nantes <- recipient_Nantes[,-c(2,4,5)]
+```
+
 
 ```{r}
 write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "recipient", append = TRUE)
 ```
+
+```{r}
+addWorksheet(OUT, "recipient")
+writeData(OUT, sheet = "recipient", x = recipient_Nantes)
+```
+
 
 ```{r}
 describe(recipient)

@@ -40,7 +40,7 @@ consult_N$cs_consult[is.na(consult_N$cs_consult)] <- 0
 consult_N$cs_dose_consult[is.na(consult_N$cs_dose_consult)] <- 0
 ```
 
-attempts to solve the weight problem (replace by the mean of weight) and add the number of consult by id_g
+attempts to solve the weight problem (replace by the mean of weight) and add the number of consult by id_g (failed)
 ```{r}
 nombre_consultations <- table(consult_N$id_g)
 consult_N_improved <- consult_N
@@ -56,6 +56,7 @@ for (i in unique(consult_N_improved$id_g)) {
 ```
 Put the size when we already have it
 ```{r}
+consult_N_improved <- consult_N
 cons_w_noNA <- consult_N_improved[!is.na(consult_N_improved$height_consult),c(1,7)]
 cons_w_noNA<-unique(cons_w_noNA)
 
@@ -67,14 +68,21 @@ for (i in unique(cons_w_noNA$id_g)) {
 
 
 ```{r}
+consult_N_improved <- consult_N_improved[,-c(17,28,31)]
+
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(consult_N$id_g)
+sum <- 0
 for (col in names(consult_N)) {
   if(sum(is.na(consult_N[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(consult_N[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(consult_N[[col]])),sum(is.na(consult_N[[col]]))/lenght,"random")}
-}
+    sum <- sum + sum(is.na(consult_N_improved[[col]]))
+    cat(col ,":" , sum(is.na(consult_N_improved[[col]]))/lenght," : ",sum(is.na(consult_N_improved[[col]])),"\n")
+    #missing <- c(missing, sum(is.na(consult_N_improved[[col]]))/lenght)}
+    #dataframe[col] <- c(sum(is.na(consult_N[[col]])),sum(is.na(consult_N[[col]]))/lenght,"random")}
+}}
+print(sum)
 ```
+
 
 
 Missing (NA) : - day_consult : 703/32350

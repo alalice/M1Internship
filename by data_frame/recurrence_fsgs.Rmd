@@ -19,10 +19,15 @@ dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(rec_fsgs_N$id_g)
 for (col in names(rec_fsgs_N)) {
   if(sum(is.na(rec_fsgs_N[[col]]))!= 0){
-    #cat(col ,":" , sum(is.na(rec_fsgs_N[[col]])),"\n")}
-    dataframe[col] <- c(sum(is.na(rec_fsgs_N[[col]])),sum(is.na(rec_fsgs_N[[col]]))/lenght,"random")}
+    cat(col ,":" , sum(is.na(rec_fsgs_N[[col]]))/lenght,"\n")}
+    #dataframe[col] <- c(sum(is.na(rec_fsgs_N[[col]])),sum(is.na(rec_fsgs_N[[col]]))/lenght,"random")}
 }
 ```
+```{r}
+addWorksheet(OUT, "recurrence_fsgs")
+writeData(OUT, sheet = "recurrence_fsgs", x = rec_fsgs_N)
+```
+
 
 ```{r}
 write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "recurrence_fsgs", append = TRUE)

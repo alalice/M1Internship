@@ -13,16 +13,16 @@ suppressWarnings(library(corrplot))
 suppressWarnings(library(gplots))
 suppressWarnings(library(openxlsx))
 OUT <- createWorkbook()
-suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "antecedent_r",na = "NA",col_types = "numeric"))
+suppressWarnings(antecedent_r <- read_excel("C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\ALICE_DATAS\\ALL_VARIABLES_KiTGENIE2024.xlsx", sheet = "antecedent_r",na = "NA",col_types = c(rep("numeric",13),"text","numeric")))
 ```
 
 
 Only datas from Nantes and remove the few NA :
 ```{r}
 antecedent_r_Nantes <- antecedent_r[complete.cases(antecedent_r$id_g),]
-antecedent_r_Nantes <- antecedent_r_Nantes[,-14]
+#antecedent_r_Nantes <- antecedent_r_Nantes[,-14]
 antecedent_r_Nantes$atcdt_pregnancy_g[is.na(antecedent_r_Nantes$atcdt_pregnancy_g)]<- 0
-antecedent_r_Nantes$atcdt_vasc_g[is.na(antecedent_r_Nantes$atcdt_vasc_g)]<-0
+#antecedent_r_Nantes$atcdt_vasc_g[is.na(antecedent_r_Nantes$atcdt_vasc_g)]<-0
 ```
 
 
@@ -37,11 +37,29 @@ describe(antecedent_r_Nantes)
 ```{r}
 dataframe <- data.frame(row.names = c("missing","part","coments") )
 lenght <- length(antecedent_r_Nantes$id_g)
+sum <- 0
 for (col in names(antecedent_r_Nantes)) {
   if(sum(is.na(antecedent_r_Nantes[[col]]))!= 0){
     #cat(col ,":" , sum(is.na(antecedent_r_Nantes[[col]])),"\n")
-    dataframe[col] <- c(sum(is.na(antecedent_r_Nantes[[col]])),sum(is.na(antecedent_r_Nantes[[col]]))/lenght,"random")}
-}
+    sum <- sum +sum(is.na(antecedent_r_Nantes[[col]]))
+    print(paste0(col," : ",sum(is.na(antecedent_r_Nantes[[col]]))))
+    #dataframe[col] <- c(sum(is.na(antecedent_r_Nantes[[col]])),sum(is.na(antecedent_r_Nantes[[col]]))/lenght,"random")
+    #missing <- c(missing,sum(is.na(antecedent_r_Nantes[[col]]))/lenght)}
+}}
+print(sum)
+
+#dataframe <- data.frame(row.names = c("missing","part","coments") )
+#lenght <- length(antecedent_r$id_g)
+#sum <- 0
+#for (col in names(antecedent_r)) {
+#  if(sum(is.na(antecedent_r[[col]]))!= 0){
+#    #cat(col ,":" , sum(is.na(antecedent_r_Nantes[[col]])),"\n")
+#    sum <- sum + sum(is.na(antecedent_r[[col]]))
+#    print(paste0(col," : ",sum(is.na(antecedent_r[[col]]))))
+    #dataframe[col] <- c(sum(is.na(antecedent_r[[col]])),sum(is.na(antecedent_r[[col]]))/lenght,"random")
+    #missing <- c(missing,sum(is.na(antecedent_r[[col]]))/lenght)}
+#  }}
+#  print(sum)
 ```
 
 missing "NA" : - atcdt_diab_g : 57 (random)
@@ -53,12 +71,15 @@ dataframe$atcdt_smok_g[3]<- "missing all (remove column)"
 dataframe$atcdt_pregnancy_g[3]<- "replace by 0"
 ```
 ```{r}
-addWorksheet(wb = OUT, "antecedent_r")
+OUT <- openxlsx::createWorkbook()
+addWorksheet(OUT, "antecedent_r")
 writeData(OUT, sheet = "antecedent_r", x = antecedent_r_Nantes)
+openxlsx::saveWorkbook(OUT,"C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\NewDATA\\CLEAN_MERGE_new4.xlsx")
 ```
 
 ```{r}
 write.xlsx(dataframe, file = "C:\\Alice\\1-Universitée\\Stages\\M1-centrale\\DATAS\\Describe\\explore\\explore_NA.xlsx",sheetName = "antecedent_r2", append = FALSE)
+
 ```
 
 
